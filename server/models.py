@@ -1,7 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 
-db=SQLAlchemy()
-
+db = SQLAlchemy()
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -17,16 +16,16 @@ class User(db.Model):
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     
     agents = db.relationship('Agent', back_populates='user')
-    properties = db.relationship('Property', backref='user')
+    properties = db.relationship('Property', back_populates='user')
     saved_properties = db.relationship('SavedProperty', back_populates='user')
     reviews = db.relationship('Review', back_populates='user')
     contact_messages = db.relationship('ContactMessage', back_populates='user')
+
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False, unique=True)
     users = db.relationship('User', back_populates='role')
-
 
 class Property(db.Model):
     __tablename__ = 'properties'
@@ -35,6 +34,7 @@ class Property(db.Model):
     city = db.Column(db.String, nullable=False)
     square_footage = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Integer, nullable=False)
+    property_type = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     
@@ -42,7 +42,7 @@ class Property(db.Model):
     agent_id = db.Column(db.Integer, db.ForeignKey('agents.id'), nullable=True)
     
     photos = db.relationship('Photo', back_populates='property')
-    agent = db.relationship('Agent', backref=db.backref('properties', lazy=True))
+    agent = db.relationship('Agent', back_populates='properties')
     saved_by = db.relationship('SavedProperty', back_populates='property')
     contact_messages = db.relationship('ContactMessage', back_populates='property')
     reviews = db.relationship('Review', back_populates='property')
@@ -66,11 +66,11 @@ class Agent(db.Model):
     sold = db.Column(db.Integer, nullable=False)
     languages = db.Column(db.String, nullable=False)
     agency_name = db.Column(db.String, nullable=False)
-    listed_properties = db.Column(db.String, nullable=False)
+    listed_properties = db.Column(db.Integer, nullable=False) 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     
     user = db.relationship('User', back_populates='agents')
-    properties = db.relationship('Property', backref='agent')
+    properties = db.relationship('Property', back_populates='agent')
 
 class SavedProperty(db.Model):
     __tablename__ = 'saved_properties'
@@ -107,4 +107,4 @@ class Review(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user = db.relationship('User', back_populates='reviews')
     agent_id = db.Column(db.Integer, db.ForeignKey('agents.id'), nullable=True)
-    agent = db.relationship('Agent', backref=db.backref('reviews', lazy=True))
+    agent = db.relationship('Agent', back_populates='reviews')

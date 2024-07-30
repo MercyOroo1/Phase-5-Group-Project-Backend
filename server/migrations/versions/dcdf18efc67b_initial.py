@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: 512516f7c794
+Revision ID: dcdf18efc67b
 Revises: 
-Create Date: 2024-07-30 11:35:08.051914
+Create Date: 2024-07-30 12:16:42.698963
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '512516f7c794'
+revision = 'dcdf18efc67b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -47,7 +47,7 @@ def upgrade():
     sa.Column('sold', sa.Integer(), nullable=False),
     sa.Column('languages', sa.String(), nullable=False),
     sa.Column('agency_name', sa.String(), nullable=False),
-    sa.Column('listed_properties', sa.String(), nullable=False),
+    sa.Column('listed_properties', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id'),
@@ -59,6 +59,7 @@ def upgrade():
     sa.Column('city', sa.String(), nullable=False),
     sa.Column('square_footage', sa.Integer(), nullable=False),
     sa.Column('price', sa.Integer(), nullable=False),
+    sa.Column('property_type', sa.String(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=False),
