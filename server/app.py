@@ -9,8 +9,10 @@ from models import db
 
 
 app = Flask(__name__)
-migrate = Migrate(app, db)
+app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///property.db'
 
+migrate = Migrate(app = app, db= db)
+db.init_app(app)
 @app.route('/')
 def home():
     return "Welcome to the Home Page!"
