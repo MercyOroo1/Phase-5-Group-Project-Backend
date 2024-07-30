@@ -1,13 +1,14 @@
 from flask_sqlalchemy import SQLAlchemy
 
-db = SQLAlchemy()
+db=SQLAlchemy()
+
 
 class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String, nullable=False)
-    email = db.Column(db.String, nullable=False, unique=True)  
+    email = db.Column(db.String, nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     role = db.relationship('Role', back_populates='users')
@@ -19,12 +20,13 @@ class User(db.Model):
     properties = db.relationship('Property', backref='user')
     saved_properties = db.relationship('SavedProperty', back_populates='user')
     reviews = db.relationship('Review', back_populates='user')
-
+    contact_messages = db.relationship('ContactMessage', back_populates='user')
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False, unique=True)  
+    name = db.Column(db.String, nullable=False, unique=True)
     users = db.relationship('User', back_populates='role')
+
 
 class Property(db.Model):
     __tablename__ = 'properties'
@@ -55,9 +57,9 @@ class Photo(db.Model):
 class Agent(db.Model):
     __tablename__ = 'agents'
     id = db.Column(db.Integer, primary_key=True)
-    license_number = db.Column(db.String, nullable=False)  
+    license_number = db.Column(db.String, nullable=False)
     full_name = db.Column(db.String, nullable=False)
-    email = db.Column(db.String, nullable=False, unique=True)  
+    email = db.Column(db.String, nullable=False, unique=True)
     experience = db.Column(db.String, nullable=False)
     phone_number = db.Column(db.String, nullable=False)
     for_sale = db.Column(db.Integer, nullable=False)
@@ -91,6 +93,7 @@ class ContactMessage(db.Model):
     property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
     property = db.relationship('Property', back_populates='contact_messages')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user = db.relationship('User', back_populates='contact_messages')
 
 class Review(db.Model):
     __tablename__ = 'reviews'
