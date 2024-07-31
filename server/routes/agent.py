@@ -56,15 +56,13 @@ class AgentResourceList(Resource):
     def post(self):
         data=agent_parser.parse_args()
         agent=Agent(license_number=data['license_number'],full_name=data['full_name'],email=data['email'],experience=data['experience'],phone_number=data['phone_number'],for_sale=data['for_sale'],sold=data['sold'],languages=data['languages'],agency_name=data['agency_name'],listed_properties=data['listed_properties'])
-                    
-    def delete(self):
-        agents=Agent.query.all()
-        db.session.delete(agents)
+        db.session.add(agent)
         db.session.commit()
-        return {'message':'All agents deleted'}
+        return {"message": "agent added successfully"}
+                    
+    
 
-
-agent_api.add_resource(AgentResourceList,'/agentslist')
+agent_api.add_resource(AgentResourceList,'/list')
 
 class PropertiesAgentResource(Resource):
     def get(self, id):

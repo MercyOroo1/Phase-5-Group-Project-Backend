@@ -2,6 +2,8 @@ from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from models import db
+from routes.property import property_bp
+from routes.agent import agent_bp
 from routes.auth import auth_bp,bcrypt, jwt,create_resources
 from flask_mail import Mail
 from dotenv import load_dotenv
@@ -15,8 +17,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = "We are winners"
 
 app.register_blueprint(auth_bp)
+app.register_blueprint(agent_bp)
 bcrypt.init_app(app)
 jwt.init_app(app)
+app.register_blueprint(property_bp)
 
 migrate = Migrate(app = app, db= db)
 db.init_app(app)
@@ -48,4 +52,4 @@ create_resources(mail)
 #         return f'An error occurred: {str(e)}'
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0',port=5050,debug=True)
