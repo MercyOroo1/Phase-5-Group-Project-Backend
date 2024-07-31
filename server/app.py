@@ -2,6 +2,9 @@ from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from models import db
+from routes.auth import auth_bp,bcrypt, jwt
+
+
 from routes.property import property_bp
 from routes.agent import agent_bp
 from routes.auth import auth_bp,bcrypt, jwt,create_resources
