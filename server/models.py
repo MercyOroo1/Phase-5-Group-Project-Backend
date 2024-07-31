@@ -18,9 +18,6 @@ class User(db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id', name='fk_user_role'))
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp(), nullable = True)
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp(), nullable = True)
-    agents = db.relationship('Agent', back_populates='user')
-    properties = db.relationship('Property', back_populates='user')
-
     saved_properties = db.relationship('SavedProperty', back_populates='user')
     reviews = db.relationship('Review', back_populates='user')
     contact_messages = db.relationship('ContactMessage', back_populates='user')
@@ -45,22 +42,21 @@ class Property(db.Model):
     city = db.Column(db.String, nullable=False)
     square_footage = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Integer, nullable=False)
-    property_type = db.Column(db.String, nullable=False)
+    property_type = db.Column(db.String(50), nullable=False) 
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
-    listing_status = db.Column(db.String(20),nullable=False)
-    rooms=db.Column(db.String(20),nullable=False)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id', name='fk_property_user'), nullable=False)
-    agent_id = db.Column(db.Integer, db.ForeignKey('agents.id', name='fk_property_agent'), nullable=True)
+    listing_status = db.Column(db.String(20), nullable=False)
+    rooms = db.Column(db.String(20), nullable=False)
+    agent_id = db.Column(db.Integer, db.ForeignKey('agents.id', name='fk_property_agent'), nullable=False)
 
     photos = db.relationship('Photo', back_populates='property')
     agent = db.relationship('Agent', back_populates='properties')
     saved_by = db.relationship('SavedProperty', back_populates='property')
     contact_messages = db.relationship('ContactMessage', back_populates='property')
     reviews = db.relationship('Review', back_populates='property')
-    user = db.relationship('User', back_populates='properties')
-
+    
+    
+    
 class Photo(db.Model):
     __tablename__ = 'photos'
     id = db.Column(db.Integer, primary_key=True)
@@ -81,9 +77,7 @@ class Agent(db.Model):
     languages = db.Column(db.String, nullable=False)
     agency_name = db.Column(db.String, nullable=False)
     listed_properties = db.Column(db.Integer, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id', name='fk_agent_user'), nullable=False)
-
-    user = db.relationship('User', back_populates='agents')
+    
     properties = db.relationship('Property', back_populates='agent')
 
 class SavedProperty(db.Model):
