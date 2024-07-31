@@ -70,9 +70,4 @@ class PropertiesAgentResource(Resource):
     def get(self, id):
         agent=Agent.query.get_or_404(id)
         properties=agent.properties
-        return [{'id':property.id, 'title':property.title,'price':property.price,'bedrooms':property.bedrooms,'bathrooms':property.bathrooms,'square_footage':property.square_footage,'address':property.address,'city':property.city,'state':property.state,'country':property.country,'status':property.status,'description':property.description,'agent_id':property.agent_id} for property in properties]
-    def post(self, id):
-       agent=Agent.query.get(id)
-       properties=agent.properties
-       return{ {}for property in properties}
-       
+        return[{}for property in properties]
