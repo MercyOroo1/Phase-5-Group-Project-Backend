@@ -1,8 +1,8 @@
-"""initial
+"""empty message
 
-Revision ID: dcdf18efc67b
+Revision ID: f0558d44f0b5
 Revises: 
-Create Date: 2024-07-30 12:16:42.698963
+Create Date: 2024-07-31 12:07:20.341884
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'dcdf18efc67b'
+revision = 'f0558d44f0b5'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -29,12 +29,13 @@ def upgrade():
     sa.Column('full_name', sa.String(), nullable=False),
     sa.Column('email', sa.String(), nullable=False),
     sa.Column('password', sa.String(), nullable=False),
+    sa.Column('reset_token', sa.String(), nullable=True),
+    sa.Column('token_expiry', sa.String(), nullable=True),
     sa.Column('role_id', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.ForeignKeyConstraint(['role_id'], ['roles.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('email')
+    sa.ForeignKeyConstraint(['role_id'], ['roles.id'], name='fk_user_role'),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('agents',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -49,7 +50,7 @@ def upgrade():
     sa.Column('agency_name', sa.String(), nullable=False),
     sa.Column('listed_properties', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name='fk_agent_user'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
@@ -62,10 +63,12 @@ def upgrade():
     sa.Column('property_type', sa.String(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('listing_status', sa.String(length=20), nullable=False),
+    sa.Column('rooms', sa.String(length=20), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('agent_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['agent_id'], ['agents.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['agent_id'], ['agents.id'], name='fk_property_agent'),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name='fk_property_user'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('contact_messages',
@@ -77,15 +80,15 @@ def upgrade():
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('property_id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['property_id'], ['properties.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['property_id'], ['properties.id'], name='fk_contactmessage_property'),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name='fk_contactmessage_user'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('photos',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('photo_url', sa.String(), nullable=False),
     sa.Column('property_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['property_id'], ['properties.id'], ),
+    sa.ForeignKeyConstraint(['property_id'], ['properties.id'], name='fk_photo_property'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('reviews',
@@ -95,18 +98,16 @@ def upgrade():
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('property_id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('agent_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['agent_id'], ['agents.id'], ),
-    sa.ForeignKeyConstraint(['property_id'], ['properties.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['property_id'], ['properties.id'], name='fk_review_property'),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name='fk_review_user'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('saved_properties',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('property_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['property_id'], ['properties.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['property_id'], ['properties.id'], name='fk_savedproperty_property'),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name='fk_savedproperty_user'),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
