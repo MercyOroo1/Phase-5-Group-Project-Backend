@@ -5,10 +5,11 @@ from models import db
 from routes.auth import auth_bp,bcrypt, jwt,create_resources
 from flask_mail import Mail
 from dotenv import load_dotenv
+from flask_cors import CORS
 load_dotenv()
 
-
 app = Flask(__name__)
+CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///property.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

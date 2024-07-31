@@ -42,7 +42,7 @@ class ResetPasswordRequest(Resource):
             token = serializer.dumps(email, salt='reset-password')
             user.reset_token = token
             # user.token_expiry = datetime.utcnow() + timedelta(hours=1)
-            reset_url = f"http://127.0.0.1:5000/auth/reset-password?token={token}"
+            reset_url = f"http://localhost:5173/reset-password?token={token}"
             msg = Message("Password Reset Request",
                           sender="mercy.oroo.ke@gmail.com",
                           recipients=[email])
