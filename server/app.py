@@ -6,10 +6,6 @@ from routes.auth import auth_bp,bcrypt, jwt
 
 
 
-
-
-
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///property.db'
 
