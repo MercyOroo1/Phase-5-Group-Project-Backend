@@ -1,8 +1,8 @@
-"""first migration
+"""empty message
 
-Revision ID: 61fef193ac9d
+Revision ID: f0558d44f0b5
 Revises: 
-Create Date: 2024-07-31 01:09:06.911556
+Create Date: 2024-07-31 12:07:20.341884
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '61fef193ac9d'
+revision = 'f0558d44f0b5'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -32,6 +32,8 @@ def upgrade():
     sa.Column('reset_token', sa.String(), nullable=True),
     sa.Column('token_expiry', sa.String(), nullable=True),
     sa.Column('role_id', sa.Integer(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['role_id'], ['roles.id'], name='fk_user_role'),
     sa.PrimaryKeyConstraint('id')
     )
@@ -61,6 +63,8 @@ def upgrade():
     sa.Column('property_type', sa.String(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('listing_status', sa.String(length=20), nullable=False),
+    sa.Column('rooms', sa.String(length=20), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('agent_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['agent_id'], ['agents.id'], name='fk_property_agent'),
