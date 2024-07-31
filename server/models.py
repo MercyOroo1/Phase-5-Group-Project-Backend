@@ -16,10 +16,11 @@ class User(db.Model):
     token_expiry = db.Column(db.String, nullable = True)
 
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id', name='fk_user_role'))
-    # created_at = db.Column(db.DateTime, default=db.func.current_timestamp(), nullable = True)
-    # updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp(), nullable = True)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp(), nullable = True)
+    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp(), nullable = True)
     agents = db.relationship('Agent', back_populates='user')
     properties = db.relationship('Property', back_populates='user')
+
     saved_properties = db.relationship('SavedProperty', back_populates='user')
     reviews = db.relationship('Review', back_populates='user')
     contact_messages = db.relationship('ContactMessage', back_populates='user')
@@ -47,6 +48,8 @@ class Property(db.Model):
     property_type = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+    listing_status = db.Column(db.String(20),nullable=False)
+    rooms=db.Column(db.String(20),nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', name='fk_property_user'), nullable=False)
     agent_id = db.Column(db.Integer, db.ForeignKey('agents.id', name='fk_property_agent'), nullable=True)
