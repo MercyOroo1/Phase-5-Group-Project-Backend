@@ -69,3 +69,10 @@ class PropertiesAgentResource(Resource):
         agent=Agent.query.get_or_404(id)
         properties=agent.properties
         return[{}for property in properties]
+    
+
+class ContactMessage(Resource):
+    def get(self, id):
+        agent= agent.getbyId(id)
+        messages=agent.messages
+        return

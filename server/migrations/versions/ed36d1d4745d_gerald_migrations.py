@@ -1,8 +1,8 @@
-"""add confirmation column
+"""gerald migrations
 
-Revision ID: dca951fa2113
+Revision ID: ed36d1d4745d
 Revises: 
-Create Date: 2024-08-01 03:22:17.197432
+Create Date: 2024-08-01 11:10:02.600394
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'dca951fa2113'
+revision = 'ed36d1d4745d'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -66,7 +66,8 @@ def upgrade():
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['role_id'], ['roles.id'], name='fk_user_role'),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('email')
     )
     op.create_table('contact_messages',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -77,6 +78,8 @@ def upgrade():
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('property_id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('agent_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['agent_id'], ['agents.id'], name='fk_contactmessage_agent'),
     sa.ForeignKeyConstraint(['property_id'], ['properties.id'], name='fk_contactmessage_property'),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name='fk_contactmessage_user'),
     sa.PrimaryKeyConstraint('id')
