@@ -12,6 +12,8 @@ contact_parser.add_argument('email', type=str, required=True, help='Email is req
 contact_parser.add_argument('subject', type=str, required=True, help='Subject is required')
 contact_parser.add_argument('message', type=str, required=True, help='Message is required')
 contact_parser.add_argument('property_id', type=int, required=True, help='Property ID is required')
+contact_parser.add_argument('agent_id', type=int, required=True, help='Agent ID is required')
+
 
 class ContactMessageResource(Resource):
     @jwt_required() 
@@ -24,7 +26,8 @@ class ContactMessageResource(Resource):
             subject=args['subject'],
             message=args['message'],
             property_id=args['property_id'],
-            user_id=current_user.id  
+            user_id=current_user.id, 
+            agent_id=args['agent_id']
         )
         
         db.session.add(contact_message)

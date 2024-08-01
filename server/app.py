@@ -3,6 +3,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from models import db
 from routes.auth import auth_bp,bcrypt, jwt
+from routes.contactmessage import contact_bp
 
 
 from routes.property import property_bp
@@ -25,6 +26,7 @@ app.register_blueprint(agent_bp)
 bcrypt.init_app(app)
 jwt.init_app(app)
 app.register_blueprint(property_bp)
+app.register_blueprint(contact_bp)
 
 migrate = Migrate(app = app, db= db)
 db.init_app(app)
