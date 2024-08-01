@@ -100,3 +100,9 @@ class GetPropertyByPriceRange(Resource):
         return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status, 'rooms': property.rooms} for property in properties]
 
 property_api.add_resource(GetPropertyByPriceRange, '/<int:min_price>/<int:max_price>')
+
+
+class GetPropertyForSale(Resource):
+    def get(self):
+        properties = Property.query.filter_by(listing_status='for sale').all()
+        return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status, 'rooms': property.rooms} for property in properties]

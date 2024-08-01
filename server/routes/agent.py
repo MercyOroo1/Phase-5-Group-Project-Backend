@@ -69,3 +69,6 @@ class PropertiesAgentResource(Resource):
         agent=Agent.query.get_or_404(id)
         properties=agent.properties
         return[{}for property in properties]
+    
+
+agent_api.add_resource(PropertiesAgentResource,'/<int:id>/properties')
