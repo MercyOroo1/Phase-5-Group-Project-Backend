@@ -2,15 +2,20 @@ from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from models import db
+from routes.auth import auth_bp,bcrypt, jwt
+from routes.contactmessage import contact_bp
+
+
 from routes.property import property_bp
 from routes.agent import agent_bp
 from routes.auth import auth_bp,bcrypt, jwt,create_resources
 from flask_mail import Mail
 from dotenv import load_dotenv
+from flask_cors import CORS
 load_dotenv()
 
-
 app = Flask(__name__)
+CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///property.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -21,6 +26,7 @@ app.register_blueprint(agent_bp)
 bcrypt.init_app(app)
 jwt.init_app(app)
 app.register_blueprint(property_bp)
+app.register_blueprint(contact_bp)
 
 migrate = Migrate(app = app, db= db)
 db.init_app(app)

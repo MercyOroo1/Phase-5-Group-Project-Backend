@@ -71,4 +71,6 @@ class PropertiesAgentResource(Resource):
         return[{}for property in properties]
     
 
+
 agent_api.add_resource(PropertiesAgentResource,'/<int:id>/properties')
+

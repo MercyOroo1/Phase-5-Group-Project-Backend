@@ -102,6 +102,7 @@ class GetPropertyByPriceRange(Resource):
 property_api.add_resource(GetPropertyByPriceRange, '/<int:min_price>/<int:max_price>')
 
 
+
 class GetPropertyForSale(Resource):
     def get(self):
         properties = Property.query.filter_by(listing_status='for sale').all()
