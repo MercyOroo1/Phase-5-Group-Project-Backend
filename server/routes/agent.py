@@ -71,8 +71,6 @@ class PropertiesAgentResource(Resource):
         return[{}for property in properties]
     
 
-class ContactMessage(Resource):
-    def get(self, id):
-        agent= agent.getbyId(id)
-        messages=agent.messages
-        return
+
+agent_api.add_resource(PropertiesAgentResource,'/<int:id>/properties')
+

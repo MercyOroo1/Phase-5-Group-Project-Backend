@@ -7,8 +7,10 @@ from werkzeug.security import generate_password_hash
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired,BadSignature
 from flask_mail import Message
 from datetime import datetime, timedelta
+from flask_cors import CORS
 
 serializer = URLSafeTimedSerializer('We are winners')
+CORS(auth_bp)
 
 auth_bp = Blueprint('auth_bp', __name__, url_prefix='/auth')
 auth_api = Api(auth_bp)
