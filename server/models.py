@@ -14,6 +14,7 @@ class User(db.Model):
     password = db.Column(db.String, nullable=False)
     reset_token = db.Column(db.String, nullable = True)
     token_expiry = db.Column(db.String, nullable = True)
+    confirmed = db.Column(db.Boolean, default=False)
 
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id', name='fk_user_role'))
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp(), nullable = True)
