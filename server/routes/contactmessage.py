@@ -37,3 +37,4 @@ class ContactMessageResource(Resource):
 
 contact_api.add_resource(ContactMessageResource, '/messages')
 
+## My name is Gerald
