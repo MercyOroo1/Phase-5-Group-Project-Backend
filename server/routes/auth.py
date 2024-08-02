@@ -1,15 +1,20 @@
-from flask import Blueprint, jsonify, request,session
+from functools import wraps
+from flask import Blueprint, jsonify, request, session
 from flask_restful import Api, Resource, reqparse
 from models import User, db
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token, JWTManager, create_refresh_token, jwt_required, current_user
 from werkzeug.security import generate_password_hash
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired,BadSignature
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from flask_mail import Message
 from datetime import datetime, timedelta
 from flask_cors import CORS
 
 serializer = URLSafeTimedSerializer('We are winners')
+
+
+=======
+# CORS(auth_bp)
 
 
 auth_bp = Blueprint('auth_bp', __name__, url_prefix='/auth')
@@ -41,10 +46,9 @@ class ResetPasswordRequest(Resource):
         data = request.get_json()
         email = data.get('email')
         user = User.query.filter_by(email=email).first()
-        if user:
+        if user and user.active:
             token = serializer.dumps(email, salt='reset-password')
             user.reset_token = token
-            # user.token_expiry = datetime.utcnow() + timedelta(hours=1)
             reset_url = f"http://localhost:5173/reset-password?token={token}"
             msg = Message("Password Reset Request",
                           sender="mercy.oroo.ke@gmail.com",
@@ -52,8 +56,8 @@ class ResetPasswordRequest(Resource):
             msg.body = f"Use this link to reset your password: {reset_url}"
             self.mail.send(msg)
 
-        return jsonify({'message': 'If the email exists, a reset link has been sent.'})
-    
+        return jsonify({'message': 'If the email exists and the account is active, a reset link has been sent.'})
+
 class ResetPassword(Resource):
     def post(self):
         data = request.get_json()
@@ -66,11 +70,11 @@ class ResetPassword(Resource):
             return jsonify({'message': 'The reset link is invalid or expired.'}), 400
 
         user = User.query.filter_by(email=email).first()
-        if user:
+        if user and user.active:
             user.password = bcrypt.generate_password_hash(new_password)
             db.session.commit()
             return jsonify({'message': 'Password has been reset.'})
-        return jsonify({'message': 'User not found.'}), 404
+        return jsonify({'message': 'User not found or account is not active.'}), 404
 
 class Register(Resource):
 
@@ -84,7 +88,7 @@ class Register(Resource):
             return {"msg": "Passwords do not match"}
         
         hashed_password = bcrypt.generate_password_hash(data.get('password')).decode('utf-8')
-        new_user = User(full_name=data.get('full_name'), email=data.get('email'), password=hashed_password, confirmed=False)
+        new_user = User(full_name=data.get('full_name'), email=data.get('email'), password=hashed_password, confirmed=False, active=True)
         db.session.add(new_user)
         db.session.commit()
         
@@ -128,10 +132,12 @@ class Login(Resource):
             return {"msg": "User does not exist"}
         if not bcrypt.check_password_hash(user.password, data.get('password')):
             return {"msg": "Password does not match"}
+        if not user.active:
+            return {"msg": "Your account is deactivated. Please contact support."}
 
         token = create_access_token(identity=user.id)
         refresh_token = create_refresh_token(identity=user.id)
-        return {"token": token, "refresh_token": refresh_token}
+        return {"token": token, "refresh_token": refresh_token, 'role_id': user.role_id}
 
     @jwt_required(refresh=True)
     def get(self):
@@ -143,9 +149,29 @@ class Logout(Resource):
         session.pop('user_id', None)
         return {'msg': 'You have successfully logged out'}, 200
 
+
+
+
+def allow(*allowed_roles):
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            user = current_user
+            # Fetch the role associated with the user's role_id
+            user_role = user.role_id
+            
+            # Check if the user's role_id is in the allowed_roles
+            if user_role in allowed_roles:
+                return fn(*args, **kwargs)
+            
+            # If the role is not allowed, deny access
+            return {"msg": "Access Denied"}, 403
+        
+        return wrapper
+    return decorator
 # Register resources
 def create_resources(mail):
-    # Initialize resources with the necessary dependencies
+    
     auth_api.add_resource(Register, '/register', resource_class_kwargs={'mail': mail})
     auth_api.add_resource(Login, '/login')
     auth_api.add_resource(Logout, '/logout')
