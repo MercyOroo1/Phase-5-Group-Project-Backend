@@ -1,12 +1,14 @@
 from flask_restful import Api,Resource,reqparse
 from models import Property, db,Photo
 from flask import Blueprint
+from flask_cors import CORS
+
 
 
 
 property_bp = Blueprint('property_bp', __name__, url_prefix='/property')
 property_api = Api(property_bp)
-
+CORS(property_bp)
 property_args = reqparse.RequestParser()
 property_args.add_argument('address', type=str, required=True, help='address is required')
 property_args.add_argument('city', type=str, required=True, help='city is required')
