@@ -1,8 +1,8 @@
-"""gerald migrations
+"""add active column
 
-Revision ID: ed36d1d4745d
+Revision ID: 61305fff2ecb
 Revises: 
-Create Date: 2024-08-01 11:10:02.600394
+Create Date: 2024-08-01 15:35:44.143798
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'ed36d1d4745d'
+revision = '61305fff2ecb'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -62,6 +62,7 @@ def upgrade():
     sa.Column('reset_token', sa.String(), nullable=True),
     sa.Column('token_expiry', sa.String(), nullable=True),
     sa.Column('confirmed', sa.Boolean(), nullable=True),
+    sa.Column('active', sa.Boolean(), nullable=True),
     sa.Column('role_id', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
