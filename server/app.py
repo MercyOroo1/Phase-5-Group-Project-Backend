@@ -4,7 +4,11 @@ from flask_sqlalchemy import SQLAlchemy
 from models import db
 from routes.auth import auth_bp,bcrypt, jwt
 from routes.contactmessage import contact_bp
+
+from routes.photo import photo_bp
+
 from routes.admin import admin_bp
+
 
 
 from routes.property import property_bp
@@ -25,7 +29,11 @@ app.config['SECRET_KEY'] = "We are winners"
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(agent_bp)
+
+app.register_blueprint(photo_bp)
+
 app.register_blueprint(user_bp)
+
 bcrypt.init_app(app)
 jwt.init_app(app)
 app.register_blueprint(property_bp)

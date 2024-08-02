@@ -11,12 +11,17 @@ from datetime import datetime, timedelta
 from flask_cors import CORS
 
 serializer = URLSafeTimedSerializer('We are winners')
+
+
+=======
 # CORS(auth_bp)
+
 
 auth_bp = Blueprint('auth_bp', __name__, url_prefix='/auth')
 auth_api = Api(auth_bp)
 bcrypt = Bcrypt()
 jwt = JWTManager()
+CORS(auth_bp)
 
 @jwt.user_lookup_loader
 def user_lookup_callback(_jwt_header, jwt_data):
