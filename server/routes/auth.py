@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from flask_cors import CORS
 
 serializer = URLSafeTimedSerializer('We are winners')
-CORS(auth_bp)
+# CORS(auth_bp)
 
 auth_bp = Blueprint('auth_bp', __name__, url_prefix='/auth')
 auth_api = Api(auth_bp)
