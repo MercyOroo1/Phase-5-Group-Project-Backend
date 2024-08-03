@@ -1,12 +1,14 @@
 from flask_restful import Api,Resource,reqparse
 from models import Property, db,Photo
 from flask import Blueprint
+from flask_cors import CORS
+
 
 
 
 property_bp = Blueprint('property_bp', __name__, url_prefix='/property')
 property_api = Api(property_bp)
-
+CORS(property_bp)
 property_args = reqparse.RequestParser()
 property_args.add_argument('address', type=str, required=True, help='address is required')
 property_args.add_argument('city', type=str, required=True, help='city is required')
@@ -102,9 +104,8 @@ class GetPropertyByPriceRange(Resource):
 property_api.add_resource(GetPropertyByPriceRange, '/<int:min_price>/<int:max_price>')
 
 
-class GetPropertybyPropertyStatus(Resource):
-    def get(self, listing_status):
-        properties = Property.query.filter_by(listing_status=listing_status).all()
-        return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status, 'rooms': property.rooms} for property in properties]
 
-property_api.add_resource(GetPropertybyPropertyStatus, "/status/<string:listing_status>")
+class GetPropertyForSale(Resource):
+    def get(self):
+        properties = Property.query.filter_by(listing_status='for sale').all()
+        return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status, 'rooms': property.rooms} for property in properties]

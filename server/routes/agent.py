@@ -68,11 +68,10 @@ class PropertiesAgentResource(Resource):
     def get(self, id):
         agent=Agent.query.get_or_404(id)
         properties=agent.properties
-        return[{}for property in properties]
+        return [{'id': property.id, 'property': property.address,'city':property.city ,'square_footage':property.square_footage,'price':property.price,'property_type': property.property_type,'listing_status':property.listing_status,'rooms':property.rooms}for property in properties]
+        
     
 
-class ContactMessage(Resource):
-    def get(self, id):
-        agent= agent.getbyId(id)
-        messages=agent.messages
-        return
+
+agent_api.add_resource(PropertiesAgentResource,'/<int:id>/properties')
+
