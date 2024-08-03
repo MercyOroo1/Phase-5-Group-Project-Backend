@@ -36,3 +36,4 @@ class ContactMessageResource(Resource):
         return {'message': 'Your message has been sent!'}, 201
 
 contact_api.add_resource(ContactMessageResource, '/messages')
+
