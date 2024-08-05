@@ -23,9 +23,33 @@ class User(db.Model):
     reviews = db.relationship('Review', back_populates='user')
     contact_messages = db.relationship('ContactMessage', back_populates='user')
     role = db.relationship('Role', back_populates='users')
+    applications = db.relationship('AgentApplication', back_populates='user')
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
+
+
+
+
+class AgentApplication(db.Model):
+    __tablename__ = 'agent_applications'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique = True)
+    license_number = db.Column(db.String, nullable=False)
+    full_name = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False, unique=True)
+    experience = db.Column(db.String, nullable=False)
+    phone_number = db.Column(db.String, nullable=False)
+    for_sale = db.Column(db.Integer, nullable=False, default=0)
+    sold = db.Column(db.Integer, nullable=False, default=0)
+    languages = db.Column(db.String, nullable=False)
+    agency_name = db.Column(db.String, nullable=False)
+    listed_properties = db.Column(db.Integer, nullable=False, default=0)
+    status = db.Column(db.String(20), default='pending', nullable=False)  # 'pending', 'approved', 'rejected'
+   
+
+    # Relationship to the User model
+    user = db.relationship('User', back_populates='applications')
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -66,6 +90,7 @@ class Photo(db.Model):
 class Agent(db.Model):
     __tablename__ = 'agents'
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=False)
     license_number = db.Column(db.String, nullable=False)
     full_name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False, unique=True)

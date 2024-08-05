@@ -1,7 +1,8 @@
 from flask_restful import Resource,Api,reqparse
 from flask import Flask,Blueprint
 from flask_cors import CORS
-from models import db ,Agent
+from models import db ,Agent, AgentApplication,User
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 agent_bp=Blueprint('agent',__name__,url_prefix='/agents')
@@ -22,9 +23,11 @@ agent_parser.add_argument('listed_properties',type=str,required=True, help='List
 
 
 class AgentResource(Resource):
+    # get all agents by the user
     def get(self, id):
         agent=Agent.query.get_or_404(id)
         return {'id':agent.id, 'licence_number':agent.license_number,'full_name':agent.full_name,'email':agent.email,'experience':agent.experience,'phone_number':agent.phone_number,'for_sale':agent.for_sale,'sold':agent.sold,'languages':agent.languages,'agency_name':agent.agency_name,'listed_properties':agent.listed_properties}
+    # an agent can edit his or her info
     def put(self, id):
         agent=Agent.query.get_or_404(id)
         data=agent_parser.parse_args()
@@ -40,7 +43,7 @@ class AgentResource(Resource):
         agent.listed_properties=data['listed_properties']
         db.session.commit()
         return {'id':agent.id, 'license_number':agent.license_number,'full_name':agent.full_name,'email':agent.email,'experience':agent.experience,'phone_number':agent.phone_number,'for_sale':agent.for_sale,'sold':agent.sold,"languages":agent.languages,'listed_properties':agent.listed_properties}
-    
+    # an agent can delete his own account
     def delete(self,id):
       agent=Agent.query.get_or_404(id)
       db.session.delete(agent)
@@ -53,14 +56,18 @@ class AgentResourceList(Resource):
     def get(self):
         agents=Agent.query.all()
         return [{'id':agent.id, 'license_number':agent.license_number,'full_name':agent.full_name,'email':agent.email,'experience':agent.experience,'phone_number':agent.phone_number,'for_sale':agent.for_sale,'sold':agent.sold,'languages':agent.languages,'agency_name':agent.agency_name,'listed_properties':agent.listed_properties} for agent in agents]
+    # agent application 
     def post(self):
         data=agent_parser.parse_args()
         agent=Agent(license_number=data['license_number'],full_name=data['full_name'],email=data['email'],experience=data['experience'],phone_number=data['phone_number'],for_sale=data['for_sale'],sold=data['sold'],languages=data['languages'],agency_name=data['agency_name'],listed_properties=data['listed_properties'])
         db.session.add(agent)
         db.session.commit()
         return {"message": "agent added successfully"}
-                    
     
+
+
+
+
 
 agent_api.add_resource(AgentResourceList,'/list')
 
