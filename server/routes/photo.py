@@ -45,19 +45,6 @@ class PhotoListResource(Resource):
         db.session.add(photo)
         db.session.commit()
         return {'message': 'Photo added successfully'}, 201
-    
-    def patch(self):
-        args = photo_parser.parse_args()
-        if args['property_id'] is None:
-            return {'message': 'property_id is required to update photos'}, 400
-        photos = Photo.query.filter_by(property_id=args['property_id']).all()
-        if not photos:
-            return {'message': 'No photos found for the given property_id'}, 404
-        for photo in photos:
-            if args['photo_url'] is not None:
-                photo.photo_url = args['photo_url']
-        db.session.commit()
-        return {'message': 'Photos updated successfully'}
 
 photo_api.add_resource(PhotoListResource, '/list')
 
