@@ -13,6 +13,7 @@ from flask_cors import CORS
 serializer = URLSafeTimedSerializer('We are winners')
 
 
+
 # CORS(auth_bp)
 
 
