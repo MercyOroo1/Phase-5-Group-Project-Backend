@@ -7,7 +7,7 @@ from routes.contactmessage import contact_bp
 
 from routes.photo import photo_bp
 
-from routes.admin import admin_bp
+from routes.admin import admin_bp, create_resources2
 
 
 
@@ -56,6 +56,7 @@ mail = Mail(app)
 
 
 create_resources(mail)
+create_resources2(mail)
 # @app.route('/send-test-email')
 # def send_test_email():
 #     try:
