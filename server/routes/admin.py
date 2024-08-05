@@ -4,9 +4,8 @@ from flask import Blueprint
 from routes.auth import allow
 from flask_jwt_extended import jwt_required
 
-# hello
 
-
+# hello again
 admin_bp = Blueprint('admin_bp', __name__, url_prefix='/admin')
 admin_api = Api(admin_bp)
 
