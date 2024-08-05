@@ -1,8 +1,8 @@
-"""ahmed migrations
+"""gerald
 
-Revision ID: 59eafed145f3
+Revision ID: 7484f7557f8d
 Revises: 
-Create Date: 2024-08-01 17:43:11.730016
+Create Date: 2024-08-05 11:25:23.986958
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '59eafed145f3'
+revision = '7484f7557f8d'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -62,6 +62,7 @@ def upgrade():
     sa.Column('reset_token', sa.String(), nullable=True),
     sa.Column('token_expiry', sa.String(), nullable=True),
     sa.Column('confirmed', sa.Boolean(), nullable=True),
+    sa.Column('active', sa.Boolean(), nullable=True),
     sa.Column('role_id', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
