@@ -93,6 +93,7 @@ class Agent(db.Model):
     user_id = db.Column(db.Integer, nullable=False)
     license_number = db.Column(db.String, nullable=False)
     full_name = db.Column(db.String, nullable=False)
+    photo_url = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False, unique=True)
     experience = db.Column(db.String, nullable=False)
     phone_number = db.Column(db.String, nullable=False)
