@@ -1,14 +1,12 @@
-from flask_restful import Api,Resource,reqparse
-from models import Property, db,Photo
+from flask_restful import Api, Resource, reqparse
+from models import Property, db, Photo
 from flask import Blueprint
 from flask_cors import CORS
 
-
-
-
-property_bp = Blueprint('property_bp', __name__, url_prefix='/property')
+property_bp = Blueprint('property_bp',__name__, url_prefix='/property')
 property_api = Api(property_bp)
 CORS(property_bp)
+
 property_args = reqparse.RequestParser()
 property_args.add_argument('address', type=str, required=True, help='address is required')
 property_args.add_argument('city', type=str, required=True, help='city is required')
@@ -19,11 +17,20 @@ property_args.add_argument('listing_status', type=str, required=True, help='list
 property_args.add_argument('rooms', type=str, required=True, help='rooms is required')
 property_args.add_argument('agent_id', type=int, required=True, help='agent_id is required')
 
-
 class PropertyResource(Resource):
     def get(self, id):
         property = Property.query.get_or_404(id)
-        return {'id': property.id, 'property': property.address,'city':property.city ,'square_footage':property.square_footage,'price':property.price,'property_type': property.property_type,'listing_status':property.listing_status,'rooms':property.rooms}
+        return {
+            'id': property.id,
+            'address': property.address,
+            'city': property.city,
+            'square_footage': property.square_footage,
+            'price': property.price,
+            'property_type': property.property_type,
+            'listing_status': property.listing_status,
+            'rooms': property.rooms,
+            'agent_id': property.agent_id
+        }
     
     def put(self, id):
         property = Property.query.get_or_404(id)
@@ -36,28 +43,45 @@ class PropertyResource(Resource):
         property.listing_status = args['listing_status']
         property.rooms = args['rooms']
         db.session.commit()
-        return { 'property': property.address,'city':property.city ,'square_footage':property.square_footage,'price':property.price,'property_type':property.property_type,'listing_status':property.listing_status,'rooms':property.rooms,'agent_id':property.agent_id}
-    def delete(self,id):
+        return { 'id': property.id, 'address': property.address, 'city': property.city }
+
+    def delete(self, id):
         property = Property.query.get_or_404(id)
         db.session.delete(property)
         db.session.commit()
         return {'message': 'Property deleted'}
-    
-property_api.add_resource(PropertyResource,'/<int:id>')
+
+property_api.add_resource(PropertyResource, '/<int:id>')
 
 class PropertyListResource(Resource):
     def get(self):
         properties = Property.query.all()
-        return [{ 'property': property.address,'city':property.city ,'square_footage':property.square_footage,'price':property.price,'property_type':property.property_type,'listing_status':property.listing_status,'rooms':property.rooms,} for property in properties]
+        return [{
+            'id': property.id,
+            'address': property.address,
+            'city': property.city,
+            'square_footage': property.square_footage,
+            'price': property.price,
+            'property_type': property.property_type,
+            'listing_status': property.listing_status,
+            'rooms': property.rooms
+        } for property in properties]
     
     def post(self):
         args = property_args.parse_args()
-        property = Property(address=args['address'], city=args['city'], square_footage=args['square_footage'], price=args['price'], property_type=args['property_type'], listing_status=args['listing_status'], rooms=args['rooms'], agent_id=args['agent_id'])
+        property = Property(
+            address=args['address'], 
+            city=args['city'], 
+            square_footage=args['square_footage'], 
+            price=args['price'], 
+            property_type=args['property_type'], 
+            listing_status=args['listing_status'], 
+            rooms=args['rooms'], 
+            agent_id=args['agent_id']
+        )
         db.session.add(property)
         db.session.commit()
-        return{'message':'property added successfully'},201
-    
-    
+        return {'message': 'Property added successfully'}, 201
 
 property_api.add_resource(PropertyListResource, '/list')
 
@@ -70,19 +94,12 @@ class PhotosOfProperty(Resource):
     def post(self, id):
         property = Property.query.get_or_404(id)
         args = reqparse.RequestParser()
-        args.add_argument('photo_url', type=str, required=True, help='photo_url is required').parse_args()
+        args.add_argument('photo_url', type=str, required=True, help='photo_url is required')
+        args = args.parse_args()
         photo = Photo(photo_url=args['photo_url'], property_id=property.id)
         db.session.add(photo)
         db.session.commit()
-        return {"message": "photo was successfully created"}
-    
-    def delete_photo(self, photo_id):
-        photo = Photo.query.get_or_404(photo_id)
-        db.session.delete(photo)
-        db.session.commit()
-        return {'message': 'Photo deleted'}
-    
-
+        return {"message": "Photo was successfully created"}, 201
 
 property_api.add_resource(PhotosOfProperty, '/<int:id>/photos')
 
@@ -91,21 +108,18 @@ class GetPropertyByCity(Resource):
         properties = Property.query.filter_by(city=city).all()
         return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status, 'rooms': property.rooms} for property in properties]
 
-property_api.add_resource(GetPropertyByCity, '/<string:city>')
-
-
-
+property_api.add_resource(GetPropertyByCity, '/city/<string:city>')
 
 class GetPropertyByPriceRange(Resource):
     def get(self, min_price, max_price):
         properties = Property.query.filter(Property.price >= min_price, Property.price <= max_price).all()
         return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status, 'rooms': property.rooms} for property in properties]
 
-property_api.add_resource(GetPropertyByPriceRange, '/<int:min_price>/<int:max_price>')
-
-
+property_api.add_resource(GetPropertyByPriceRange, '/price/<int:min_price>/<int:max_price>')
 
 class GetPropertyForSale(Resource):
     def get(self):
         properties = Property.query.filter_by(listing_status='for sale').all()
         return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status, 'rooms': property.rooms} for property in properties]
+
+property_api.add_resource(GetPropertyForSale, '/for-sale')
