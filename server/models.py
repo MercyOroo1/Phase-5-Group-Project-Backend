@@ -24,9 +24,24 @@ class User(db.Model):
     contact_messages = db.relationship('ContactMessage', back_populates='user')
     role = db.relationship('Role', back_populates='users')
     applications = db.relationship('AgentApplication', back_populates='user')
+    profile = db.relationship('Profile', uselist=False, back_populates='user')
+   
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
+
+
+
+
+
+class Features(db.Model):
+    __tablename__ = 'features'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    description = db.Column(db.String, nullable=False)
+
+    property=db.relationship('Property',back_populates='features')
+    property_id=db.Column(db.Integer,db.ForeignKey('roles.id'))
 
 
 
@@ -47,6 +62,7 @@ class AgentApplication(db.Model):
     agency_name = db.Column(db.String, nullable=False)
     listed_properties = db.Column(db.Integer, nullable=False, default=0)
     status = db.Column(db.String(20), default='pending', nullable=False)  # 'pending', 'approved', 'rejected'
+    profile=db.relationship('Profile',backref='user')  
    
 
     # Relationship to the User model
@@ -59,6 +75,18 @@ class Role(db.Model):
     
     users = db.relationship('User', back_populates='role')
 
+class Profile(db.Model):
+    __tablename__ = 'profiles'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True)
+    photo_url = db.Column(db.String, nullable=True)
+    bio=db.Column(db.String, nullable=True)
+    phone_number = db.Column(db.String, nullable=True)
+    website = db.Column(db.String, nullable=True)
+    user=db.relationship('User',backref='profile')
+   
+
+
 class Property(db.Model):
     __tablename__ = 'properties'
     id = db.Column(db.Integer, primary_key=True)
@@ -70,7 +98,7 @@ class Property(db.Model):
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     listing_status = db.Column(db.String(20), nullable=False)
-    rooms = db.Column(db.String(20), nullable=False)
+    
 
     agent_id = db.Column(db.Integer, db.ForeignKey('agents.id', name='fk_property_agent'), nullable=False)
 
@@ -79,6 +107,7 @@ class Property(db.Model):
     saved_by = db.relationship('SavedProperty', back_populates='property')
     contact_messages = db.relationship('ContactMessage', back_populates='property')
     reviews = db.relationship('Review', back_populates='property')
+    features = db.relationship('Features',  back_populates='property')
 
 class Photo(db.Model):
     __tablename__ = 'photos'
