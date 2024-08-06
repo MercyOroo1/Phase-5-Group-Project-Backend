@@ -11,10 +11,13 @@ CORS(saved_bp)
 saved_parser = reqparse.RequestParser()
 saved_parser.add_argument("property_id", type=int, required=True, help="property_id is required")
 
-class SavedProperties(Resource):
+class UserSavedProperties(Resource):
     @jwt_required()
-    def get(self, user_id):
-        saved_properties = SavedProperty.query.filter_by(user_id=user_id).all()
+    def get(self):
+        current_user_id = get_jwt_identity()
+        saved_properties = SavedProperty.query.filter_by(user_id = current_user_id)
+        if not saved_properties:
+            return {'msg': "You do not have any saved propeties"}
         return [{
             'id': saved_property.id,
             'property_id': saved_property.property_id,
@@ -30,8 +33,9 @@ class SavedProperties(Resource):
                 'photos': [{'id': photo.id, 'photo_url': photo.photo_url} for photo in saved_property.property.photos]
             }
         } for saved_property in saved_properties], 200
-    
-saved_api.add_resource(SavedProperties, '/<int:user_id>')
+
+
+saved_api.add_resource(UserSavedProperties, '/user')
 
 
 class MoveSaved(Resource):
