@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from models import db
 from routes.auth import auth_bp,bcrypt, jwt
 from routes.contactmessage import contact_bp
+from routes.features import features_bp
+from routes.profile import profile_bp
 
 from routes.photo import photo_bp
 
@@ -39,6 +41,8 @@ jwt.init_app(app)
 app.register_blueprint(property_bp)
 app.register_blueprint(contact_bp)
 app.register_blueprint(admin_bp)
+app.register_blueprint(profile_bp)
+app.register_blueprint(features_bp)
 
 migrate = Migrate(app = app, db= db)
 db.init_app(app)
