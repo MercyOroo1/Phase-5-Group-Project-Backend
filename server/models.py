@@ -41,6 +41,7 @@ class AgentApplication(db.Model):
     experience = db.Column(db.String, nullable=False)
     phone_number = db.Column(db.String, nullable=False)
     for_sale = db.Column(db.Integer, nullable=False, default=0)
+    photo_url = db.Column(db.String, nullable=False)
     sold = db.Column(db.Integer, nullable=False, default=0)
     languages = db.Column(db.String, nullable=False)
     agency_name = db.Column(db.String, nullable=False)
