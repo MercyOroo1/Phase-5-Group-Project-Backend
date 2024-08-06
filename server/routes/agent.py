@@ -19,6 +19,7 @@ agent_parser.add_argument('sold',type=int,required=True, help='Sold cannot be bl
 agent_parser.add_argument('languages',type=str,required=True, help='Languages cannot be blank')
 agent_parser.add_argument('agency_name',type=str,required=True, help='Agency name cannot be blank')
 agent_parser.add_argument('listed_properties',type=str,required=True, help='Listed properties cannot be blank')
+agent_parser.add_argument('photo_url',type=str, help='photo url is optional')
 
 
 
@@ -26,7 +27,7 @@ class AgentResource(Resource):
     # get all agents by the user
     def get(self, id):
         agent=Agent.query.get_or_404(id)
-        return {'id':agent.id, 'licence_number':agent.license_number,'full_name':agent.full_name,'email':agent.email,'experience':agent.experience,'phone_number':agent.phone_number,'for_sale':agent.for_sale,'sold':agent.sold,'languages':agent.languages,'agency_name':agent.agency_name,'listed_properties':agent.listed_properties}
+        return {'id':agent.id, 'licence_number':agent.license_number,'full_name':agent.full_name,'email':agent.email,'experience':agent.experience,'phone_number':agent.phone_number,'for_sale':agent.for_sale,'sold':agent.sold,'languages':agent.languages,'agency_name':agent.agency_name,'listed_properties':agent.listed_properties,'photo_url':agent.photo_url}
     # an agent can edit his or her info
     def put(self, id):
         agent=Agent.query.get_or_404(id)
@@ -41,8 +42,10 @@ class AgentResource(Resource):
         agent.languages=data['languages']
         agent.agency_name=data['agency_name']
         agent.listed_properties=data['listed_properties']
+        if 'photo_url' in data:
+            agent.photo_url=data['photo_url']
         db.session.commit()
-        return {'id':agent.id, 'license_number':agent.license_number,'full_name':agent.full_name,'email':agent.email,'experience':agent.experience,'phone_number':agent.phone_number,'for_sale':agent.for_sale,'sold':agent.sold,"languages":agent.languages,'listed_properties':agent.listed_properties}
+        return {'id':agent.id, 'license_number':agent.license_number,'full_name':agent.full_name,'email':agent.email,'experience':agent.experience,'phone_number':agent.phone_number,'for_sale':agent.for_sale,'sold':agent.sold,"languages":agent.languages,'listed_properties':agent.listed_properties,'photo_url':agent.photo_url}
     # an agent can delete his own account
     def delete(self,id):
       agent=Agent.query.get_or_404(id)
@@ -55,11 +58,11 @@ agent_api.add_resource(AgentResource,'<int:id>')
 class AgentResourceList(Resource):
     def get(self):
         agents=Agent.query.all()
-        return [{'id':agent.id, 'license_number':agent.license_number,'full_name':agent.full_name,'email':agent.email,'experience':agent.experience,'phone_number':agent.phone_number,'for_sale':agent.for_sale,'sold':agent.sold,'languages':agent.languages,'agency_name':agent.agency_name,'listed_properties':agent.listed_properties} for agent in agents]
+        return [{'id':agent.id, 'license_number':agent.license_number,'full_name':agent.full_name,'email':agent.email,'experience':agent.experience,'phone_number':agent.phone_number,'for_sale':agent.for_sale,'sold':agent.sold,'languages':agent.languages,'agency_name':agent.agency_name,'listed_properties':agent.listed_properties,'photo_url':agent.photo_url} for agent in agents]
     # agent application 
     def post(self):
         data=agent_parser.parse_args()
-        agent=Agent(license_number=data['license_number'],full_name=data['full_name'],email=data['email'],experience=data['experience'],phone_number=data['phone_number'],for_sale=data['for_sale'],sold=data['sold'],languages=data['languages'],agency_name=data['agency_name'],listed_properties=data['listed_properties'])
+        agent=Agent(license_number=data['license_number'],full_name=data['full_name'],email=data['email'],experience=data['experience'],phone_number=data['phone_number'],for_sale=data['for_sale'],sold=data['sold'],languages=data['languages'],agency_name=data['agency_name'],listed_properties=data['listed_properties'],photo_url=data['photo_url'])
         db.session.add(agent)
         db.session.commit()
         return {"message": "agent added successfully"}

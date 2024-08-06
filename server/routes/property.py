@@ -2,8 +2,9 @@ from flask_restful import Api, Resource, reqparse
 from models import Property, db, Photo
 from flask import Blueprint
 from flask_cors import CORS
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
-property_bp = Blueprint('property_bp',__name__, url_prefix='/property')
+property_bp = Blueprint('property_bp', __name__, url_prefix='/property')
 property_api = Api(property_bp)
 CORS(property_bp)
 
@@ -15,9 +16,10 @@ property_args.add_argument('price', type=int, required=True, help='price is requ
 property_args.add_argument('property_type', type=str, required=True, help='property_type is required')
 property_args.add_argument('listing_status', type=str, required=True, help='listing_status is required')
 property_args.add_argument('rooms', type=str, required=True, help='rooms is required')
-property_args.add_argument('agent_id', type=int, required=True, help='agent_id is required')
+# property_args.add_argument('agent_id', type=int, required=True, help='agent_id is required')
 
 class PropertyResource(Resource):
+    
     def get(self, id):
         property = Property.query.get_or_404(id)
         return {
@@ -31,7 +33,8 @@ class PropertyResource(Resource):
             'rooms': property.rooms,
             'agent_id': property.agent_id
         }
-    
+
+    @jwt_required()
     def put(self, id):
         property = Property.query.get_or_404(id)
         args = property_args.parse_args()
@@ -43,8 +46,13 @@ class PropertyResource(Resource):
         property.listing_status = args['listing_status']
         property.rooms = args['rooms']
         db.session.commit()
-        return { 'id': property.id, 'address': property.address, 'city': property.city }
+        return {
+            'id': property.id,
+            'address': property.address,
+            'city': property.city
+        }
 
+    @jwt_required()
     def delete(self, id):
         property = Property.query.get_or_404(id)
         db.session.delete(property)
@@ -53,7 +61,9 @@ class PropertyResource(Resource):
 
 property_api.add_resource(PropertyResource, '/<int:id>')
 
+
 class PropertyListResource(Resource):
+   
     def get(self):
         properties = Property.query.all()
         return [{
@@ -66,31 +76,36 @@ class PropertyListResource(Resource):
             'listing_status': property.listing_status,
             'rooms': property.rooms
         } for property in properties]
-    
+
+    @jwt_required()
     def post(self):
-        args = property_args.parse_args()
-        property = Property(
-            address=args['address'], 
-            city=args['city'], 
-            square_footage=args['square_footage'], 
-            price=args['price'], 
-            property_type=args['property_type'], 
-            listing_status=args['listing_status'], 
-            rooms=args['rooms'], 
-            agent_id=args['agent_id']
-        )
-        db.session.add(property)
-        db.session.commit()
-        return {'message': 'Property added successfully'}, 201
+     current_user_id = get_jwt_identity()
+     args = property_args.parse_args()
+     property = Property(
+        address=args['address'], 
+        city=args['city'], 
+        square_footage=args['square_footage'], 
+        price=args['price'], 
+        property_type=args['property_type'], 
+        listing_status=args['listing_status'], 
+        rooms=args['rooms'], 
+        agent_id=current_user_id
+    )
+     db.session.add(property)
+     db.session.commit()
+     return {'message': 'Property added successfully', 'property_id': property.id}, 201
+
 
 property_api.add_resource(PropertyListResource, '/list')
 
 class PhotosOfProperty(Resource):
+   
     def get(self, id):
         property = Property.query.get_or_404(id)
         photos = property.photos
         return [{'id': photo.id, 'photo_url': photo.photo_url} for photo in photos]
-    
+
+    @jwt_required()
     def post(self, id):
         property = Property.query.get_or_404(id)
         args = reqparse.RequestParser()
@@ -104,6 +119,7 @@ class PhotosOfProperty(Resource):
 property_api.add_resource(PhotosOfProperty, '/<int:id>/photos')
 
 class GetPropertyByCity(Resource):
+
     def get(self, city):
         properties = Property.query.filter_by(city=city).all()
         return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status, 'rooms': property.rooms} for property in properties]
@@ -111,6 +127,7 @@ class GetPropertyByCity(Resource):
 property_api.add_resource(GetPropertyByCity, '/city/<string:city>')
 
 class GetPropertyByPriceRange(Resource):
+    
     def get(self, min_price, max_price):
         properties = Property.query.filter(Property.price >= min_price, Property.price <= max_price).all()
         return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status, 'rooms': property.rooms} for property in properties]
@@ -118,8 +135,20 @@ class GetPropertyByPriceRange(Resource):
 property_api.add_resource(GetPropertyByPriceRange, '/price/<int:min_price>/<int:max_price>')
 
 class GetPropertyForSale(Resource):
+    
     def get(self):
         properties = Property.query.filter_by(listing_status='for sale').all()
         return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status, 'rooms': property.rooms} for property in properties]
 
 property_api.add_resource(GetPropertyForSale, '/for-sale')
+
+
+class GetAgentPropeties(Resource):
+   
+    @jwt_required()  
+    def get(self):
+        current_user_id = get_jwt_identity()
+        properties = Property.query.filter_by(agent_id = current_user_id )
+        return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status, 'rooms': property.rooms} for property in properties]
+    
+property_api.add_resource(GetAgentPropeties, '/agents')
