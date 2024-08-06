@@ -23,6 +23,17 @@ class GetUserById(Resource):
         except SQLAlchemyError as e:
             db.session.rollback()
             return {'message': 'An error occurred', 'error': str(e)}, 500
+        
+    @jwt_required()
+    def get(self,id):
+        current_user_id = get_jwt_identity()
+
+        if current_user_id!= id:
+            return {'message': 'Unauthorized to view this account'}, 403
+
+        user = User.query.get_or_404(id)
+        return {'full_name': user.full_name,'email': user.email} 
+    
 
 user_api.add_resource(GetUserById, '/<int:id>/delete')
 
