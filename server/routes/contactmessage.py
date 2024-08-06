@@ -37,3 +37,14 @@ class ContactMessageResource(Resource):
 
 contact_api.add_resource(ContactMessageResource, '/messages')
 
+
+class AgentMessages(Resource):
+    @jwt_required()
+    def get(self):
+        current_user_id = get_jwt_identity()
+        messages = ContactMessage.query.filter_by(agent_id = current_user_id )
+        if not messages:
+            return {'msg': 'You have no messages'}
+        return [{'id': message.id, 'name': message.name, 'email': message.email, 'subject': message.subject, 'property_id': message.property_id, 'user_id': message.user_id} for message in messages]
+    
+contact_api.add_resource(AgentMessages, '/agent')    
