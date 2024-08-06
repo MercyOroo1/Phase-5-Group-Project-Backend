@@ -1,7 +1,11 @@
 from flask import Flask
+from flask_restful import Api, Resource, reqparse
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
+
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from models import db
+
 from routes.auth import auth_bp,bcrypt, jwt
 from routes.contactmessage import contact_bp
 
@@ -13,11 +17,12 @@ from routes.admin import admin_bp
 
 from routes.property import property_bp
 from routes.agent import agent_bp
-from routes.auth import auth_bp,bcrypt, jwt,create_resources
+from routes.auth import auth_bp, bcrypt, jwt,create_resources
 from routes.user import user_bp
 from flask_mail import Mail
 from dotenv import load_dotenv
 from flask_cors import CORS
+from routes.savedproperties import saved_bp
 load_dotenv()
 
 app = Flask(__name__)
@@ -29,6 +34,7 @@ app.config['SECRET_KEY'] = "We are winners"
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(agent_bp)
+app.register_blueprint(saved_bp)
 
 app.register_blueprint(photo_bp)
 
