@@ -44,7 +44,7 @@ class PhotoListResource(Resource):
         photo = Photo(photo_url=args['photo_url'], property_id=args['property_id'])
         db.session.add(photo)
         db.session.commit()
-        return {'message': 'Photo added successfully'}, 201
+        return {'message': 'Photo added successfully', }, 201
 
 photo_api.add_resource(PhotoListResource, '/list')
 
