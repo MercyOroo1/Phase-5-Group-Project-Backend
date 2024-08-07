@@ -25,23 +25,10 @@ class User(db.Model):
     role = db.relationship('Role', back_populates='users')
     applications = db.relationship('AgentApplication', back_populates='user')
     profile = db.relationship('Profile', uselist=False, back_populates='user')
-   
+    
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
-
-
-
-
-
-class Features(db.Model):
-    __tablename__ = 'features'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    description = db.Column(db.String, nullable=False)
-
-    property=db.relationship('Property',back_populates='features')
-    property_id=db.Column(db.Integer,db.ForeignKey('roles.id'))
 
 
 
@@ -62,7 +49,8 @@ class AgentApplication(db.Model):
     agency_name = db.Column(db.String, nullable=False)
     listed_properties = db.Column(db.Integer, nullable=False, default=0)
     status = db.Column(db.String(20), default='pending', nullable=False)  # 'pending', 'approved', 'rejected'
-    profile=db.relationship('Profile',backref='user')  
+    profile = db.relationship('Profile', uselist=False, back_populates='agent_application')  # One-to-One relationship
+  
    
 
     # Relationship to the User model
@@ -80,10 +68,23 @@ class Profile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True)
     photo_url = db.Column(db.String, nullable=True)
-    bio=db.Column(db.String, nullable=True)
+    bio = db.Column(db.String, nullable=True)
     phone_number = db.Column(db.String, nullable=True)
     website = db.Column(db.String, nullable=True)
-    user=db.relationship('User',backref='profile')
+
+    user = db.relationship('User', back_populates='profile')
+    agent_application_id = db.Column(db.Integer, db.ForeignKey('agent_applications.id'), nullable=False, unique=True)  # Foreign key 
+    agent_application = db.relationship('AgentApplication', back_populates='profile')  # One-to-One relationship  with profile model
+
+
+
+class Feature(db.Model):
+    __tablename__ = 'features'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    description = db.Column(db.String, nullable=False)
+    properties = db.relationship('Property', back_populates='feature')
+
    
 
 
@@ -98,6 +99,7 @@ class Property(db.Model):
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     listing_status = db.Column(db.String(20), nullable=False)
+    feature_id = db.Column(db.Integer, db.ForeignKey('features.id')) 
     
 
     agent_id = db.Column(db.Integer, db.ForeignKey('agents.id', name='fk_property_agent'), nullable=False)
@@ -107,7 +109,7 @@ class Property(db.Model):
     saved_by = db.relationship('SavedProperty', back_populates='property')
     contact_messages = db.relationship('ContactMessage', back_populates='property')
     reviews = db.relationship('Review', back_populates='property')
-    features = db.relationship('Features',  back_populates='property')
+    feature = db.relationship('Feature', back_populates='properties')
 
 class Photo(db.Model):
     __tablename__ = 'photos'
