@@ -49,8 +49,7 @@ class AgentApplication(db.Model):
     agency_name = db.Column(db.String, nullable=False)
     listed_properties = db.Column(db.Integer, nullable=False, default=0)
     status = db.Column(db.String(20), default='pending', nullable=False)  # 'pending', 'approved', 'rejected'
-    profile = db.relationship('Profile', uselist=False, back_populates='agent_application')  # One-to-One relationship
-  
+    
    
 
     # Relationship to the User model
@@ -73,11 +72,7 @@ class Profile(db.Model):
     website = db.Column(db.String, nullable=True)
 
     user = db.relationship('User', back_populates='profile')
-    agent_application_id = db.Column(db.Integer, db.ForeignKey('agent_applications.id'), nullable=False, unique=True)  # Foreign key 
-    agent_application = db.relationship('AgentApplication', back_populates='profile')  # One-to-One relationship  with profile model
-
-
-
+    
 class Feature(db.Model):
     __tablename__ = 'features'
     id = db.Column(db.Integer, primary_key=True)
