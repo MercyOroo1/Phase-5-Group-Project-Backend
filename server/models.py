@@ -30,6 +30,32 @@ class User(db.Model):
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
+class ListingFee(db.Model):
+    __tablename__ = 'listing_fees'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    fee_amount = db.Column(db.Float, nullable=False)  
+    fee_type = db.Column(db.String(50), nullable=False)  # 'agent_application' or 'property_listing'
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    
+    agent_id = db.Column(db.Integer, db.ForeignKey('agents.id'))
+
+    start_date = db.Column(db.DateTime, nullable=False) # Subscription start date
+    end_date = db.Column(db.DateTime, nullable=False)
+    is_active = db.Column(db.Boolean, default=True)    # Indicates if the subscription is currently active
+    payment_frequency = db.Column(db.String(20), nullable=False, default='monthly')  
+     # Payment frequency
+    subscription_status = db.Column(db.String(20), default='active', nullable=False)  # 'active', 'cancelled', 'expired'
+
+
+   
+    
+    
+    agent=db.relationship('Agent', back_populates='listing_fees')
+
+
 
 
 
@@ -49,6 +75,8 @@ class AgentApplication(db.Model):
     agency_name = db.Column(db.String, nullable=False)
     listed_properties = db.Column(db.Integer, nullable=False, default=0)
     status = db.Column(db.String(20), default='pending', nullable=False)  # 'pending', 'approved', 'rejected'
+
+    
     
    
 
@@ -109,6 +137,8 @@ class Property(db.Model):
     reviews = db.relationship('Review', back_populates='property')
     feature = db.relationship('Feature', back_populates='properties')
 
+    
+
 class Photo(db.Model):
     __tablename__ = 'photos'
     id = db.Column(db.Integer, primary_key=True)
@@ -135,6 +165,10 @@ class Agent(db.Model):
 
     properties = db.relationship('Property', back_populates='agent')
     messages = db.relationship('ContactMessage', back_populates='agent')
+
+    listing_fees = db.relationship('ListingFee', back_populates='agent')
+
+
 
 class SavedProperty(db.Model):
     __tablename__ = 'saved_properties'
