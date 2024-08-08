@@ -49,8 +49,7 @@ class AgentApplication(db.Model):
     agency_name = db.Column(db.String, nullable=False)
     listed_properties = db.Column(db.Integer, nullable=False, default=0)
     status = db.Column(db.String(20), default='pending', nullable=False)  # 'pending', 'approved', 'rejected'
-    profile = db.relationship('Profile', uselist=False, back_populates='agent_application')  # One-to-One relationship
-  
+    
    
 
     # Relationship to the User model
@@ -73,10 +72,11 @@ class Profile(db.Model):
     website = db.Column(db.String, nullable=True)
 
     user = db.relationship('User', back_populates='profile')
-    agent_application_id = db.Column(db.Integer, db.ForeignKey('agent_applications.id'), nullable=False, unique=True)  # Foreign key 
-    agent_application = db.relationship('AgentApplication', back_populates='profile') 
 
 
+
+
+    
 
 class Feature(db.Model):
     __tablename__ = 'features'
@@ -100,7 +100,6 @@ class Property(db.Model):
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     listing_status = db.Column(db.String(20), nullable=False)
-    
     agent_id = db.Column(db.Integer, db.ForeignKey('agents.id', name='fk_property_agent'), nullable=False)
 
     photos = db.relationship('Photo', back_populates='property')

@@ -30,7 +30,7 @@ class PropertyResource(Resource):
             'price': property.price,
             'property_type': property.property_type,
             'listing_status': property.listing_status,
-           
+
             'agent_id': property.agent_id
         }
 
@@ -44,7 +44,11 @@ class PropertyResource(Resource):
         property.price = args['price']
         property.property_type = args['property_type']
         property.listing_status = args['listing_status']
+
         
+
+      
+
         db.session.commit()
         return {
             'id': property.id,
@@ -74,7 +78,10 @@ class PropertyListResource(Resource):
             'price': property.price,
             'property_type': property.property_type,
             'listing_status': property.listing_status,
+
             
+
+
         } for property in properties]
 
     @jwt_required()
@@ -88,6 +95,10 @@ class PropertyListResource(Resource):
         price=args['price'], 
         property_type=args['property_type'], 
         listing_status=args['listing_status'], 
+
+
+        
+
         agent_id=current_user_id
     )
      db.session.add(property)

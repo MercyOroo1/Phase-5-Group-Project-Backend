@@ -2,9 +2,13 @@ from flask import Blueprint
 from flask_restful import Api, Resource, reqparse
 from models import Review, db
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_cors import CORS
 
 review_bp = Blueprint("reviews", __name__, url_prefix="/reviews")
 review_api = Api(review_bp)
+
+CORS(review_bp)
+
 
 review_parser = reqparse.RequestParser()
 review_parser.add_argument("property_id", type=int, required=True, help="Property ID is required")
