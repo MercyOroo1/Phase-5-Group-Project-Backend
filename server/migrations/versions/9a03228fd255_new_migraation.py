@@ -1,8 +1,8 @@
-"""added relationships
+"""new migraation
 
-Revision ID: c10dac602187
+Revision ID: 9a03228fd255
 Revises: 
-Create Date: 2024-08-07 13:14:26.148788
+Create Date: 2024-08-08 10:11:42.622230
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'c10dac602187'
+revision = '9a03228fd255'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -35,12 +35,6 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
-    op.create_table('features',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(), nullable=False),
-    sa.Column('description', sa.String(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('roles',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
@@ -57,10 +51,8 @@ def upgrade():
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('listing_status', sa.String(length=20), nullable=False),
-    sa.Column('feature_id', sa.Integer(), nullable=True),
     sa.Column('agent_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['agent_id'], ['agents.id'], name='fk_property_agent'),
-    sa.ForeignKeyConstraint(['feature_id'], ['features.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('users',
@@ -114,6 +106,14 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name='fk_contactmessage_user'),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('features',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(), nullable=False),
+    sa.Column('description', sa.String(), nullable=False),
+    sa.Column('property_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['property_id'], ['properties.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('photos',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('photo_url', sa.String(), nullable=False),
@@ -163,11 +163,11 @@ def downgrade():
     op.drop_table('saved_properties')
     op.drop_table('reviews')
     op.drop_table('photos')
+    op.drop_table('features')
     op.drop_table('contact_messages')
     op.drop_table('agent_applications')
     op.drop_table('users')
     op.drop_table('properties')
     op.drop_table('roles')
-    op.drop_table('features')
     op.drop_table('agents')
     # ### end Alembic commands ###
