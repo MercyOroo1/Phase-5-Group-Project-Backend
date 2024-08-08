@@ -15,7 +15,7 @@ property_args.add_argument('square_footage', type=int, required=True, help='squa
 property_args.add_argument('price', type=int, required=True, help='price is required')
 property_args.add_argument('property_type', type=str, required=True, help='property_type is required')
 property_args.add_argument('listing_status', type=str, required=True, help='listing_status is required')
-property_args.add_argument('rooms', type=str, required=True, help='rooms is required')
+# property_args.add_argument('rooms', type=str, required=True, help='rooms is required')
 # property_args.add_argument('agent_id', type=int, required=True, help='agent_id is required')
 
 class PropertyResource(Resource):
@@ -30,7 +30,7 @@ class PropertyResource(Resource):
             'price': property.price,
             'property_type': property.property_type,
             'listing_status': property.listing_status,
-            'rooms': property.rooms,
+            # 'rooms': property.rooms,
             'agent_id': property.agent_id
         }
 
@@ -44,7 +44,7 @@ class PropertyResource(Resource):
         property.price = args['price']
         property.property_type = args['property_type']
         property.listing_status = args['listing_status']
-        property.rooms = args['rooms']
+        # property.rooms = args['rooms']
         db.session.commit()
         return {
             'id': property.id,
@@ -74,7 +74,7 @@ class PropertyListResource(Resource):
             'price': property.price,
             'property_type': property.property_type,
             'listing_status': property.listing_status,
-            'rooms': property.rooms
+            # 'rooms': property.rooms
         } for property in properties]
 
     @jwt_required()
@@ -88,7 +88,7 @@ class PropertyListResource(Resource):
         price=args['price'], 
         property_type=args['property_type'], 
         listing_status=args['listing_status'], 
-        rooms=args['rooms'], 
+        # rooms=args['rooms'], 
         agent_id=current_user_id
     )
      db.session.add(property)

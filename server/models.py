@@ -95,7 +95,7 @@ class Property(db.Model):
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     listing_status = db.Column(db.String(20), nullable=False)
     feature_id = db.Column(db.Integer, db.ForeignKey('features.id')) 
-    
+
 
     agent_id = db.Column(db.Integer, db.ForeignKey('agents.id', name='fk_property_agent'), nullable=False)
 
