@@ -72,12 +72,18 @@ class Profile(db.Model):
     website = db.Column(db.String, nullable=True)
 
     user = db.relationship('User', back_populates='profile')
+
+
+
+
     
+
 class Feature(db.Model):
     __tablename__ = 'features'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     description = db.Column(db.String, nullable=False)
+    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
     properties = db.relationship('Property', back_populates='feature')
 
    
@@ -94,9 +100,6 @@ class Property(db.Model):
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     listing_status = db.Column(db.String(20), nullable=False)
-    feature_id = db.Column(db.Integer, db.ForeignKey('features.id')) 
-
-
     agent_id = db.Column(db.Integer, db.ForeignKey('agents.id', name='fk_property_agent'), nullable=False)
 
     photos = db.relationship('Photo', back_populates='property')
