@@ -1,8 +1,8 @@
-"""added profile table
+"""empty message
 
-Revision ID: 380f242b5100
+Revision ID: e6e9b0810167
 Revises: 
-Create Date: 2024-08-06 14:40:20.636792
+Create Date: 2024-08-09 19:37:51.510012
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '380f242b5100'
+revision = 'e6e9b0810167'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -51,7 +51,7 @@ def upgrade():
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('listing_status', sa.String(length=20), nullable=False),
-    sa.Column('rooms', sa.String(length=20), nullable=False),
+    sa.Column('boosted', sa.Boolean(), nullable=True),
     sa.Column('agent_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['agent_id'], ['agents.id'], name='fk_property_agent'),
     sa.PrimaryKeyConstraint('id')
@@ -107,6 +107,14 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name='fk_contactmessage_user'),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('features',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(), nullable=False),
+    sa.Column('description', sa.String(), nullable=False),
+    sa.Column('property_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['property_id'], ['properties.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('photos',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('photo_url', sa.String(), nullable=False),
@@ -153,6 +161,7 @@ def downgrade():
     op.drop_table('reviews')
     op.drop_table('profiles')
     op.drop_table('photos')
+    op.drop_table('features')
     op.drop_table('contact_messages')
     op.drop_table('agent_applications')
     op.drop_table('users')

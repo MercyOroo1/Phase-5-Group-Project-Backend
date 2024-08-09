@@ -3,6 +3,8 @@ from models import Property, db, Photo
 from flask import Blueprint
 from flask_cors import CORS
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from routes.boostproperty import BoostProperty, GetBoostedProperties  
+
 
 property_bp = Blueprint('property_bp', __name__, url_prefix='/property')
 property_api = Api(property_bp)
@@ -16,7 +18,7 @@ property_args.add_argument('price', type=int, required=True, help='price is requ
 property_args.add_argument('property_type', type=str, required=True, help='property_type is required')
 property_args.add_argument('listing_status', type=str, required=True, help='listing_status is required')
 property_args.add_argument('rooms', type=str, required=True, help='rooms is required')
-# property_args.add_argument('agent_id', type=int, required=True, help='agent_id is required')
+
 
 class PropertyResource(Resource):
     
@@ -152,3 +154,6 @@ class GetAgentPropeties(Resource):
         return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status, 'rooms': property.rooms} for property in properties]
     
 property_api.add_resource(GetAgentPropeties, '/agents')
+property_api.add_resource(BoostProperty, '/boost')
+property_api.add_resource(GetBoostedProperties, '/boosted')
+
