@@ -23,6 +23,8 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 from routes.savedproperties import saved_bp
 from routes.review import review_bp
+from routes.payments import payments_bp
+from routes.purchaserequest import purchase_request_bp,create_resources3
 load_dotenv()
 
 app = Flask(__name__)
@@ -48,6 +50,9 @@ app.register_blueprint(contact_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(profile_bp)
 app.register_blueprint(features_bp)
+app.register_blueprint(payments_bp)
+app.register_blueprint(purchase_request_bp)
+
 
 migrate = Migrate(app = app, db= db)
 db.init_app(app)
@@ -66,6 +71,7 @@ mail = Mail(app)
 
 create_resources(mail)
 create_resources2(mail)
+create_resources3(mail)
 # @app.route('/send-test-email')
 # def send_test_email():
 #     try:
