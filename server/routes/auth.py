@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import Blueprint, jsonify, request, session
 from flask_restful import Api, Resource, reqparse
-from models import User, db
+from models import User, db, Profile
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token, JWTManager, create_refresh_token, jwt_required, current_user
 from werkzeug.security import generate_password_hash
@@ -90,6 +90,9 @@ class Register(Resource):
         hashed_password = bcrypt.generate_password_hash(data.get('password')).decode('utf-8')
         new_user = User(full_name=data.get('full_name'), email=data.get('email'), password=hashed_password, confirmed=False, active=True)
         db.session.add(new_user)
+        db.session.commit()
+        new_profile = Profile(user_id = new_user.id)
+        db.session.add(new_profile)
         db.session.commit()
         
         # Generate confirmation token
