@@ -25,6 +25,10 @@ class User(db.Model):
     role = db.relationship('Role', back_populates='users')
     applications = db.relationship('AgentApplication', back_populates='user')
     profile = db.relationship('Profile', uselist=False, back_populates='user')
+    payments = db.relationship('Payment', back_populates = 'user')
+
+    purchase_requests= db.relationship('PurchaseRequest', back_populates='user')
+    
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -37,6 +41,34 @@ class Features(db.Model):
 
     property = db.relationship('Property', back_populates='features')
     property_id = db.Column(db.Integer, db.ForeignKey('properties.id'))
+class ListingFee(db.Model):
+    __tablename__ = 'listing_fees'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    fee_amount = db.Column(db.Float, nullable=False)  
+    fee_type = db.Column(db.String(50), nullable=False)  # 'agent_application' or 'property_listing'
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    
+    agent_id = db.Column(db.Integer, db.ForeignKey('agents.id'))
+
+    start_date = db.Column(db.DateTime, nullable=False) # Subscription start date
+    end_date = db.Column(db.DateTime, nullable=False)
+    is_active = db.Column(db.Boolean, default=True)    # Indicates if the subscription is currently active
+    payment_frequency = db.Column(db.String(20), nullable=False, default='monthly')  
+     # Payment frequency
+    subscription_status = db.Column(db.String(20), default='active', nullable=False)  # 'active', 'cancelled', 'expired'
+
+
+   
+    
+    
+    agent=db.relationship('Agent', back_populates='listing_fees')
+
+
+
+
 
 class AgentApplication(db.Model):
     __tablename__ = 'agent_applications'
@@ -54,6 +86,13 @@ class AgentApplication(db.Model):
     agency_name = db.Column(db.String, nullable=False)
     listed_properties = db.Column(db.Integer, nullable=False, default=0)
     status = db.Column(db.String(20), default='pending', nullable=False)  
+    status = db.Column(db.String(20), default='pending', nullable=False)  # 'pending', 'approved', 'rejected'
+
+    
+    
+   
+
+    # Relationship to the User model
     user = db.relationship('User', back_populates='applications')
 
 class Role(db.Model):
@@ -72,6 +111,24 @@ class Profile(db.Model):
     phone_number = db.Column(db.String, nullable=True)
     website = db.Column(db.String, nullable=True)
     user = db.relationship('User', back_populates='profile')
+
+    user = db.relationship('User', back_populates='profile')
+
+
+
+
+    
+
+class Feature(db.Model):
+    __tablename__ = 'features'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    description = db.Column(db.String, nullable=False)
+    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
+    properties = db.relationship('Property', back_populates='feature')
+
+   
+
 
 class Property(db.Model):
     __tablename__ = 'properties'
@@ -94,6 +151,11 @@ class Property(db.Model):
     contact_messages = db.relationship('ContactMessage', back_populates='property')
     reviews = db.relationship('Review', back_populates='property')
     features = db.relationship('Features', back_populates='property')
+    feature = db.relationship('Feature', back_populates='properties')
+    payments = db.relationship('Payment', back_populates='property')
+    purchase_requests = db.relationship('PurchaseRequest', back_populates='property')
+
+    
 
 class Photo(db.Model):
     __tablename__ = 'photos'
@@ -121,6 +183,10 @@ class Agent(db.Model):
 
     properties = db.relationship('Property', back_populates='agent')
     messages = db.relationship('ContactMessage', back_populates='agent')
+
+    listing_fees = db.relationship('ListingFee', back_populates='agent')
+
+
 
 class SavedProperty(db.Model):
     __tablename__ = 'saved_properties'
@@ -160,3 +226,35 @@ class Review(db.Model):
 
     property = db.relationship('Property', back_populates='reviews')
     user = db.relationship('User', back_populates='reviews')
+
+
+class Payment(db.Model):
+    __tablename__ = 'payments'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    currency = db.Column(db.String(3), nullable=False)  # e.g., 'USD'
+    payment_method = db.Column(db.String(50), nullable=False)  # e.g., 'credit_card', 'paypal'
+    payment_status = db.Column(db.String(20), nullable=False)  # e.g., 'pending', 'completed', 'failed'
+    transaction_id = db.Column(db.String, unique=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp(), nullable=True)
+    property = db.relationship('Property', back_populates='payments', uselist=False)
+    
+    user = db.relationship('User', back_populates='payments')
+
+
+
+class PurchaseRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
+    status = db.Column(db.String(50), nullable=False, default='Pending')  # Status could be 'Pending', 'Approved', 'Rejected'
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp(), nullable=True)
+    updated_at = db.Column(db.DateTime, nullable=True)
+
+    user = db.relationship('User', back_populates='purchase_requests')
+    property = db.relationship('Property', back_populates='purchase_requests')
+    
+

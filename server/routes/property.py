@@ -19,6 +19,8 @@ property_args.add_argument('property_type', type=str, required=True, help='prope
 property_args.add_argument('listing_status', type=str, required=True, help='listing_status is required')
 property_args.add_argument('rooms', type=str, required=True, help='rooms is required')
 
+# property_args.add_argument('rooms', type=str, required=True, help='rooms is required')
+# property_args.add_argument('agent_id', type=int, required=True, help='agent_id is required')
 
 class PropertyResource(Resource):
     
@@ -32,7 +34,7 @@ class PropertyResource(Resource):
             'price': property.price,
             'property_type': property.property_type,
             'listing_status': property.listing_status,
-            'rooms': property.rooms,
+
             'agent_id': property.agent_id
         }
 
@@ -46,7 +48,11 @@ class PropertyResource(Resource):
         property.price = args['price']
         property.property_type = args['property_type']
         property.listing_status = args['listing_status']
-        property.rooms = args['rooms']
+
+        
+
+      
+
         db.session.commit()
         return {
             'id': property.id,
@@ -76,7 +82,10 @@ class PropertyListResource(Resource):
             'price': property.price,
             'property_type': property.property_type,
             'listing_status': property.listing_status,
-            'rooms': property.rooms
+
+            
+
+
         } for property in properties]
 
     @jwt_required()
@@ -90,7 +99,10 @@ class PropertyListResource(Resource):
         price=args['price'], 
         property_type=args['property_type'], 
         listing_status=args['listing_status'], 
-        rooms=args['rooms'], 
+
+
+        
+
         agent_id=current_user_id
     )
      db.session.add(property)
@@ -124,7 +136,7 @@ class GetPropertyByCity(Resource):
 
     def get(self, city):
         properties = Property.query.filter_by(city=city).all()
-        return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status, 'rooms': property.rooms} for property in properties]
+        return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status} for property in properties]
 
 property_api.add_resource(GetPropertyByCity, '/city/<string:city>')
 
@@ -132,7 +144,7 @@ class GetPropertyByPriceRange(Resource):
     
     def get(self, min_price, max_price):
         properties = Property.query.filter(Property.price >= min_price, Property.price <= max_price).all()
-        return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status, 'rooms': property.rooms} for property in properties]
+        return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status} for property in properties]
 
 property_api.add_resource(GetPropertyByPriceRange, '/price/<int:min_price>/<int:max_price>')
 
@@ -140,7 +152,7 @@ class GetPropertyForSale(Resource):
     
     def get(self):
         properties = Property.query.filter_by(listing_status='for sale').all()
-        return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status, 'rooms': property.rooms} for property in properties]
+        return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status} for property in properties]
 
 property_api.add_resource(GetPropertyForSale, '/for-sale')
 
@@ -151,7 +163,7 @@ class GetAgentPropeties(Resource):
     def get(self):
         current_user_id = get_jwt_identity()
         properties = Property.query.filter_by(agent_id = current_user_id )
-        return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status, 'rooms': property.rooms} for property in properties]
+        return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status } for property in properties]
     
 property_api.add_resource(GetAgentPropeties, '/agents')
 property_api.add_resource(BoostProperty, '/boost')

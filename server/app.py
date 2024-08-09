@@ -22,6 +22,8 @@ from routes.review import review_bp
 from routes.boostproperty import boost_bp
 from routes.auth import create_resources  
 
+from routes.payments import payments_bp
+from routes.purchaserequest import purchase_request_bp,create_resources3
 load_dotenv()
 
 app = Flask(__name__)
@@ -44,6 +46,9 @@ app.register_blueprint(admin_bp)
 app.register_blueprint(profile_bp)
 app.register_blueprint(features_bp)
 app.register_blueprint(boost_bp)
+app.register_blueprint(payments_bp)
+app.register_blueprint(purchase_request_bp)
+
 
 migrate = Migrate(app=app, db=db)
 db.init_app(app)
@@ -61,6 +66,19 @@ mail = Mail(app)
 
 create_resources(mail)
 create_resources2(mail)
+create_resources3(mail)
+# @app.route('/send-test-email')
+# def send_test_email():
+#     try:
+#         msg = Message('Test Email',
+#                       sender=('mercy.oroo.ke@gmail.com'),
+#                       recipients=['oroomercy@gmail.com'])
+#         msg.body = 'This is a test email sent from Flask app using Gmail.'
+#         mail.send(msg)
+#         return 'Test email sent!'
+#     except Exception as e:
+#         # You might want to log the error instead of returning it in production
+#         return f'An error occurred: {str(e)}'
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5050, debug=True)
