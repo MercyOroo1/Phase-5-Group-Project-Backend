@@ -137,7 +137,7 @@ class Login(Resource):
 
         token = create_access_token(identity=user.id)
         refresh_token = create_refresh_token(identity=user.id)
-        return {"token": token, "refresh_token": refresh_token, 'role_id': user.role_id}
+        return {"token": token, "refresh_token": refresh_token, "user_id": user.id, 'role_id': user.role_id}
 
     @jwt_required(refresh=True)
     def get(self):
