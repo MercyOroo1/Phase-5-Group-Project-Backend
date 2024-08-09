@@ -13,7 +13,7 @@ class User(db.Model):
     reset_token = db.Column(db.String, nullable=True)
     token_expiry = db.Column(db.String, nullable=True)
     confirmed = db.Column(db.Boolean, default=False)
-    active = db.Column(db.Boolean, default= True)
+    active = db.Column(db.Boolean, default=True)
 
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id', name='fk_user_role'))
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp(), nullable=True)
@@ -33,6 +33,14 @@ class User(db.Model):
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
+class Features(db.Model):
+    __tablename__ = 'features'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    description = db.Column(db.String, nullable=False)
+
+    property = db.relationship('Property', back_populates='features')
+    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'))
 class ListingFee(db.Model):
     __tablename__ = 'listing_fees'
     
@@ -65,7 +73,7 @@ class ListingFee(db.Model):
 class AgentApplication(db.Model):
     __tablename__ = 'agent_applications'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True)
     license_number = db.Column(db.String, nullable=False)
     full_name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False, unique=True)
@@ -77,6 +85,7 @@ class AgentApplication(db.Model):
     languages = db.Column(db.String, nullable=False)
     agency_name = db.Column(db.String, nullable=False)
     listed_properties = db.Column(db.Integer, nullable=False, default=0)
+    status = db.Column(db.String(20), default='pending', nullable=False)  
     status = db.Column(db.String(20), default='pending', nullable=False)  # 'pending', 'approved', 'rejected'
 
     
@@ -101,6 +110,7 @@ class Profile(db.Model):
     bio = db.Column(db.String, nullable=True)
     phone_number = db.Column(db.String, nullable=True)
     website = db.Column(db.String, nullable=True)
+    user = db.relationship('User', back_populates='profile')
 
     user = db.relationship('User', back_populates='profile')
 
@@ -131,6 +141,8 @@ class Property(db.Model):
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     listing_status = db.Column(db.String(20), nullable=False)
+    boosted = db.Column(db.Boolean, default=False)  
+
     agent_id = db.Column(db.Integer, db.ForeignKey('agents.id', name='fk_property_agent'), nullable=False)
 
     photos = db.relationship('Photo', back_populates='property')
@@ -138,6 +150,7 @@ class Property(db.Model):
     saved_by = db.relationship('SavedProperty', back_populates='property')
     contact_messages = db.relationship('ContactMessage', back_populates='property')
     reviews = db.relationship('Review', back_populates='property')
+    features = db.relationship('Features', back_populates='property')
     feature = db.relationship('Feature', back_populates='properties')
     payments = db.relationship('Payment', back_populates='property')
     purchase_requests = db.relationship('PurchaseRequest', back_populates='property')
