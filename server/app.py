@@ -30,7 +30,10 @@ CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///property.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = "We are winners"
+# app.config['SECRET_KEY'] = "We are winners"
+app.config['JWT_SECRET_KEY'] = 'We are winners' 
+jwt = JWTManager(app)
+
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(agent_bp)
