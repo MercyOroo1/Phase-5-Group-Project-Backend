@@ -25,6 +25,9 @@ class User(db.Model):
     role = db.relationship('Role', back_populates='users')
     applications = db.relationship('AgentApplication', back_populates='user')
     profile = db.relationship('Profile', uselist=False, back_populates='user')
+    payments = db.relationship('Payment', back_populates = 'user')
+
+    purchase_requests= db.relationship('PurchaseRequest', back_populates='user')
     
 
     def set_password(self, password):
@@ -136,6 +139,8 @@ class Property(db.Model):
     contact_messages = db.relationship('ContactMessage', back_populates='property')
     reviews = db.relationship('Review', back_populates='property')
     feature = db.relationship('Feature', back_populates='properties')
+    payments = db.relationship('Payment', back_populates='property')
+    purchase_requests = db.relationship('PurchaseRequest', back_populates='property')
 
     
 
@@ -208,3 +213,35 @@ class Review(db.Model):
 
     property = db.relationship('Property', back_populates='reviews')
     user = db.relationship('User', back_populates='reviews')
+
+
+class Payment(db.Model):
+    __tablename__ = 'payments'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    currency = db.Column(db.String(3), nullable=False)  # e.g., 'USD'
+    payment_method = db.Column(db.String(50), nullable=False)  # e.g., 'credit_card', 'paypal'
+    payment_status = db.Column(db.String(20), nullable=False)  # e.g., 'pending', 'completed', 'failed'
+    transaction_id = db.Column(db.String, unique=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp(), nullable=True)
+    property = db.relationship('Property', back_populates='payments', uselist=False)
+    
+    user = db.relationship('User', back_populates='payments')
+
+
+
+class PurchaseRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
+    status = db.Column(db.String(50), nullable=False, default='Pending')  # Status could be 'Pending', 'Approved', 'Rejected'
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp(), nullable=True)
+    updated_at = db.Column(db.DateTime, nullable=True)
+
+    user = db.relationship('User', back_populates='purchase_requests')
+    property = db.relationship('Property', back_populates='purchase_requests')
+    
+
