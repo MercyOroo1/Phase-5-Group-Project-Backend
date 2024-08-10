@@ -13,6 +13,7 @@ class User(db.Model):
     token_expiry = db.Column(db.DateTime, nullable=True)
     confirmed = db.Column(db.Boolean, default=False)
     active = db.Column(db.Boolean, default=True)
+
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id', name='fk_user_role'))
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp(), nullable=True)
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp(), nullable=True)
@@ -29,12 +30,47 @@ class User(db.Model):
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
+
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False, unique=True)
     
     users = db.relationship('User', back_populates='role')
+
+
+class ListingFee(db.Model):
+    __tablename__ = 'listing_fees'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    fee_amount = db.Column(db.Float, nullable=False)  
+    fee_type = db.Column(db.String(50), nullable=False)  # 'agent_application' or 'property_listing'
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    
+    agent_id = db.Column(db.Integer, db.ForeignKey('agents.id'))
+
+    start_date = db.Column(db.DateTime, nullable=False) # Subscription start date
+    end_date = db.Column(db.DateTime, nullable=False)
+    is_active = db.Column(db.Boolean, default=True)    # Indicates if the subscription is currently active
+    payment_frequency = db.Column(db.String(20), nullable=False, default='monthly')  
+     # Payment frequency
+    subscription_status = db.Column(db.String(20), default='active', nullable=False)  # 'active', 'cancelled', 'expired'
+
+
+   
+    
+    
+    agent=db.relationship('Agent', back_populates='listing_fees')
+
+    
+    
+    
+   
+
+
+
 
 class Profile(db.Model):
     __tablename__ = 'profiles'
@@ -62,12 +98,31 @@ class AgentApplication(db.Model):
     languages = db.Column(db.String, nullable=False)
     agency_name = db.Column(db.String, nullable=False)
     listed_properties = db.Column(db.Integer, nullable=False, default=0)
+    status = db.Column(db.String(20), default='pending', nullable=False)  
     status = db.Column(db.String(20), default='pending', nullable=False)  # 'pending', 'approved', 'rejected'
+
+
+
+    
+    
+   
+
 
     user = db.relationship('User', back_populates='applications')
 
-class Agent(db.Model):
+
+
+
+
+
+
+
+
+
+    
+   class Agent(db.Model):
     __tablename__ = 'agents'
+
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, nullable=False)
     license_number = db.Column(db.String, nullable=False)
@@ -97,16 +152,29 @@ class Property(db.Model):
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     listing_status = db.Column(db.String(20), nullable=False)
-    agent_id = db.Column(db.Integer, db.ForeignKey('agents.id', name='fk_property_agent'), nullable=True)
+
+  
+
+    boosted = db.Column(db.Boolean, default=False)  
+
+    agent_id = db.Column(db.Integer, db.ForeignKey('agents.id', name='fk_property_agent'), nullable=False)
+
 
     photos = db.relationship('Photo', back_populates='property', cascade='all, delete-orphan')
     agent = db.relationship('Agent', back_populates='properties')
-    saved_by = db.relationship('SavedProperty', back_populates='property', cascade='all, delete-orphan')
-    contact_messages = db.relationship('ContactMessage', back_populates='property', cascade='all, delete-orphan')
-    reviews = db.relationship('Review', back_populates='property', cascade='all, delete-orphan')
-    features = db.relationship('Feature', back_populates='property', cascade='all, delete-orphan')
-    payments = db.relationship('Payment', back_populates='property', cascade='all, delete-orphan')
-    purchase_requests = db.relationship('PurchaseRequest', back_populates='property', cascade='all, delete-orphan')
+
+   
+
+    saved_by = db.relationship('SavedProperty', back_populates='property')
+    contact_messages = db.relationship('ContactMessage', back_populates='property')
+    reviews = db.relationship('Review', back_populates='property')
+    
+    feature = db.relationship('Feature', back_populates='properties')
+    payments = db.relationship('Payment', back_populates='property')
+    purchase_requests = db.relationship('PurchaseRequest', back_populates='property')
+
+
+    
 
 class Photo(db.Model):
     __tablename__ = 'photos'
@@ -116,21 +184,8 @@ class Photo(db.Model):
     
     property = db.relationship('Property', back_populates='photos')
 
-class ListingFee(db.Model):
-    __tablename__ = 'listing_fees'
-    id = db.Column(db.Integer, primary_key=True)
-    fee_amount = db.Column(db.Float, nullable=False)  
-    fee_type = db.Column(db.String(50), nullable=False)  # 'agent_application' or 'property_listing'
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    agent_id = db.Column(db.Integer, db.ForeignKey('agents.id'))
-    start_date = db.Column(db.DateTime, nullable=False) # Subscription start date
-    end_date = db.Column(db.DateTime, nullable=False)
-    is_active = db.Column(db.Boolean, default=True)    # Indicates if the subscription is currently active
-    payment_frequency = db.Column(db.String(20), nullable=False, default='monthly')  # Payment frequency
-    subscription_status = db.Column(db.String(20), default='active', nullable=False)  # 'active', 'cancelled', 'expired'
 
-    agent = db.relationship('Agent', back_populates='listing_fees')
+
 
 class SavedProperty(db.Model):
     __tablename__ = 'saved_properties'
