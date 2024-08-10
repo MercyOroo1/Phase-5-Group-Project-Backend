@@ -13,8 +13,8 @@ features_parser.add_argument('property_id', type=int, required=True, help='Prope
 
 class FeatureResource(Resource):
     def get(self, property_id):
-        feature = Feature.query.filter_by(property_id=property_id)
-        return {'name': feature.name,'description': feature.description}
+        features = Feature.query.filter_by(property_id=property_id)
+        return [{'name': feature.name,'description': feature.description} for feature in features]
     
     def put(self, property_id):
         args = features_parser.parse_args()
@@ -31,7 +31,7 @@ class FeatureResource(Resource):
         return {'message': 'Feature deleted successfully'}
     
 
-features_api.add_resource(FeatureResource, '/<int:id>')
+features_api.add_resource(FeatureResource, '/<int:property_id>')
 
 class FeatureListResource(Resource):
     def get(self):
