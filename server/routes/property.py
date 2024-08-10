@@ -39,26 +39,41 @@ class PropertyResource(Resource):
         }
 
     @jwt_required()
-    def put(self, id):
-        property = Property.query.get_or_404(id)
-        args = property_args.parse_args()
+    def patch(self, id):
+     property = Property.query.get_or_404(id)
+    
+    # Use partial argument parsing to allow updating one field at a time
+     patch_parser = reqparse.RequestParser()
+
+    # Define only the fields you want to allow to be updated
+     patch_parser.add_argument('address', type=str, store_missing=False)
+     patch_parser.add_argument('city', type=str, store_missing=False)
+     patch_parser.add_argument('square_footage', type=int, store_missing=False)
+     patch_parser.add_argument('price', type=int, store_missing=False)
+     patch_parser.add_argument('property_type', type=str, store_missing=False)
+     patch_parser.add_argument('listing_status', type=str, store_missing=False)
+
+    # Parse arguments
+     args = patch_parser.parse_args()
+
+    # Update the property fields with the provided arguments
+     if 'address' in args:
         property.address = args['address']
+     if 'city' in args:
         property.city = args['city']
+     if 'square_footage' in args:
         property.square_footage = args['square_footage']
+     if 'price' in args:
         property.price = args['price']
+     if 'property_type' in args:
         property.property_type = args['property_type']
+     if 'listing_status' in args:
         property.listing_status = args['listing_status']
 
-        
+     db.session.commit()
 
-      
+     return {'msg': 'Property updated successfully'}
 
-        db.session.commit()
-        return {
-            'id': property.id,
-            'address': property.address,
-            'city': property.city
-        }
 
     @jwt_required()
     def delete(self, id):
