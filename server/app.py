@@ -9,6 +9,11 @@ from routes.auth import auth_bp, bcrypt, jwt
 from routes.contactmessage import contact_bp
 from routes.features import features_bp
 from routes.profile import profile_bp
+
+from routes.listingFee import listingfee_bp
+
+=======
+
 from routes.photo import photo_bp
 from routes.admin import admin_bp, create_resources2
 from routes.property import property_bp
@@ -24,20 +29,32 @@ from routes.auth import create_resources
 
 from routes.payments import payments_bp
 from routes.purchaserequest import purchase_request_bp,create_resources3
+import os
+import stripe
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///property.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+# am getting database it from .env file 
+
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///property.db'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = "We are winners"
+stripe.api_key = os.getenv('STRIPE_TEST_SECRET_KEY')
 
 # Register blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(agent_bp)
 app.register_blueprint(saved_bp)
 app.register_blueprint(review_bp)
+
+app.register_blueprint(listingfee_bp)
+
+
 app.register_blueprint(photo_bp)
 app.register_blueprint(user_bp)
 app.register_blueprint(property_bp)
