@@ -12,7 +12,7 @@ from routes.profile import profile_bp
 
 from routes.listingFee import listingfee_bp
 
-=======
+
 
 from routes.photo import photo_bp
 from routes.admin import admin_bp, create_resources2

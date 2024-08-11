@@ -121,7 +121,7 @@ class AgentApplication(db.Model):
 
 
     
-   class Agent(db.Model):
+class Agent(db.Model):
     __tablename__ = 'agents'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -153,26 +153,19 @@ class Property(db.Model):
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     listing_status = db.Column(db.String(20), nullable=False)
-
-  
-
-    boosted = db.Column(db.Boolean, default=False)  
-
+    boosted = db.Column(db.Boolean, default=False)
     agent_id = db.Column(db.Integer, db.ForeignKey('agents.id', name='fk_property_agent'), nullable=False)
-
 
     photos = db.relationship('Photo', back_populates='property', cascade='all, delete-orphan')
     agent = db.relationship('Agent', back_populates='properties')
-
-   
-
     saved_by = db.relationship('SavedProperty', back_populates='property')
     contact_messages = db.relationship('ContactMessage', back_populates='property')
     reviews = db.relationship('Review', back_populates='property')
-    
-    feature = db.relationship('Feature', back_populates='properties')
+    features = db.relationship('Feature', back_populates='property')
     payments = db.relationship('Payment', back_populates='property')
     purchase_requests = db.relationship('PurchaseRequest', back_populates='property')
+
+
 
 
     
@@ -233,7 +226,6 @@ class Feature(db.Model):
     property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
 
     property = db.relationship('Property', back_populates='features')
-
 class Payment(db.Model):
     __tablename__ = 'payments'
 
