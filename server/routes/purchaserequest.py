@@ -55,9 +55,9 @@ class ApprovePurchaseRequestResource(Resource):
     def __init__(self, mail):
         self.mail = mail
 
-    @jwt_required()
+    # @jwt_required()
     def patch(self, request_id):
-        current_user = get_jwt_identity()
+        # current_user = get_jwt_identity()
 
         # Uncomment and use if role-based access is required
         # if current_user['role_id'] != 2:  # Assuming role_id 2 is for agents
