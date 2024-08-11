@@ -3,24 +3,22 @@ from flask import Blueprint, jsonify, request, session
 from flask_restful import Api, Resource, reqparse
 from models import User, db
 from flask_bcrypt import Bcrypt
-from flask_jwt_extended import create_access_token, JWTManager, create_refresh_token, jwt_required, current_user
+from flask_jwt_extended import (
+    create_access_token, JWTManager, create_refresh_token, 
+    jwt_required, current_user
+)
 from werkzeug.security import generate_password_hash
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from flask_mail import Message
-from datetime import datetime, timedelta
 from flask_cors import CORS
 
 serializer = URLSafeTimedSerializer('We are winners')
-
-
-
-# CORS(auth_bp)
-
 
 auth_bp = Blueprint('auth_bp', __name__, url_prefix='/auth')
 auth_api = Api(auth_bp)
 bcrypt = Bcrypt()
 jwt = JWTManager()
+
 CORS(auth_bp)
 
 @jwt.user_lookup_loader
@@ -71,7 +69,7 @@ class ResetPassword(Resource):
 
         user = User.query.filter_by(email=email).first()
         if user and user.active:
-            user.password = bcrypt.generate_password_hash(new_password)
+            user.password = bcrypt.generate_password_hash(new_password).decode('utf-8')
             db.session.commit()
             return jsonify({'message': 'Password has been reset.'})
         return jsonify({'message': 'User not found or account is not active.'}), 404
@@ -83,12 +81,17 @@ class Register(Resource):
 
     def post(self):
         data = register_args.parse_args()
-        # Hash the password
         if data.get('password') != data.get('password2'):
             return {"msg": "Passwords do not match"}
         
         hashed_password = bcrypt.generate_password_hash(data.get('password')).decode('utf-8')
-        new_user = User(full_name=data.get('full_name'), email=data.get('email'), password=hashed_password, confirmed=False, active=True)
+        new_user = User(
+            full_name=data.get('full_name'), 
+            email=data.get('email'), 
+            password=hashed_password, 
+            confirmed=False, 
+            active=True
+        )
         db.session.add(new_user)
         db.session.commit()
         
@@ -114,7 +117,6 @@ class ConfirmEmail(Resource):
         except BadSignature:
             return {"msg": "Invalid confirmation token."}, 400
         
-        # Find the user by email and confirm their email
         user = User.query.filter_by(email=email).first_or_404()
         if user.confirmed:
             return {"msg": "Account already confirmed."}, 200
@@ -149,29 +151,22 @@ class Logout(Resource):
         session.pop('user_id', None)
         return {'msg': 'You have successfully logged out'}, 200
 
-
-
-
 def allow(*allowed_roles):
     def decorator(fn):
         @wraps(fn)
         def wrapper(*args, **kwargs):
             user = current_user
-            # Fetch the role associated with the user's role_id
             user_role = user.role_id
             
-            # Check if the user's role_id is in the allowed_roles
             if user_role in allowed_roles:
                 return fn(*args, **kwargs)
             
-            # If the role is not allowed, deny access
             return {"msg": "Access Denied"}, 403
         
         return wrapper
     return decorator
-# Register resources
+
 def create_resources(mail):
-    
     auth_api.add_resource(Register, '/register', resource_class_kwargs={'mail': mail})
     auth_api.add_resource(Login, '/login')
     auth_api.add_resource(Logout, '/logout')
