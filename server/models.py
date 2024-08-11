@@ -45,10 +45,10 @@ class ListingFee(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     fee_amount = db.Column(db.Float, nullable=False)  
-    fee_type = db.Column(db.String(50), nullable=False)  # 'agent_application' or 'property_listing'
+    fee_type = db.Column(db.String(50), nullable=False)  #  'property_listing'
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    
     
     agent_id = db.Column(db.Integer, db.ForeignKey('agents.id'))
 
@@ -58,6 +58,7 @@ class ListingFee(db.Model):
     payment_frequency = db.Column(db.String(20), nullable=False, default='monthly')  
      # Payment frequency
     subscription_status = db.Column(db.String(20), default='active', nullable=False)  # 'active', 'cancelled', 'expired'
+    payments = db.relationship('Payment', back_populates='listing_fee')
 
 
    
@@ -153,27 +154,24 @@ class Property(db.Model):
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     listing_status = db.Column(db.String(20), nullable=False)
-
-  
-
-    boosted = db.Column(db.Boolean, default=False)  
-
+    boosted = db.Column(db.Boolean, default=False)
     agent_id = db.Column(db.Integer, db.ForeignKey('agents.id', name='fk_property_agent'), nullable=False)
-
 
     photos = db.relationship('Photo', back_populates='property', cascade='all, delete-orphan')
     agent = db.relationship('Agent', back_populates='properties')
-
-   
-
     saved_by = db.relationship('SavedProperty', back_populates='property')
     contact_messages = db.relationship('ContactMessage', back_populates='property', cascade = 'all, delete-orphan')
     reviews = db.relationship('Review', back_populates='property')
+
     
     feature = db.relationship('Feature', back_populates='properties', cascade = 'all, delete-orphan')
+
+
     payments = db.relationship('Payment', back_populates='property')
     purchase_requests = db.relationship('PurchaseRequest', back_populates='property', cascade = 'all, delete-orphan')
     userpayment = db.relationship('UserPayment', back_populates = 'property', cascade = 'all, delete-orphan')
+
+
 
     
 
@@ -234,15 +232,27 @@ class Feature(db.Model):
 
     properties = db.relationship('Property', back_populates='feature')
 
+
+   
+
 class Payment(db.Model):
     __tablename__ = 'payments'
-    id = db.Column(db.Integer, primary_key=True)
-    amount = db.Column(db.Float, nullable=False)
-    payment_date = db.Column(db.DateTime, default=db.func.current_timestamp())
-    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
-    property = db.relationship('Property', back_populates='payments')
+
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)  # Changed to nullable=True
+    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=True)  # Changed to nullable=True
+    amount = db.Column(db.Float, nullable=False)
+    currency = db.Column(db.String(3), nullable=False)
+    payment_method = db.Column(db.String(50), nullable=False)
+    payment_status = db.Column(db.String(20), nullable=False)
+    transaction_id = db.Column(db.String, unique=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp(), nullable=True)
+    property = db.relationship('Property', back_populates='payments', uselist=False)
+    listing_fee_id = db.Column(db.Integer, db.ForeignKey('listing_fees.id'), nullable=False)
+    listing_fee = db.relationship('ListingFee', back_populates='payments')
+
     user = db.relationship('User', back_populates='payments')
 
 class PurchaseRequest(db.Model):
