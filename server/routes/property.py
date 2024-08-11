@@ -17,7 +17,7 @@ property_args.add_argument('square_footage', type=int, required=True, help='squa
 property_args.add_argument('price', type=int, required=True, help='price is required')
 property_args.add_argument('property_type', type=str, required=True, help='property_type is required')
 property_args.add_argument('listing_status', type=str, required=True, help='listing_status is required')
-property_args.add_argument('rooms', type=str, required=True, help='rooms is required')
+
 
 # property_args.add_argument('rooms', type=str, required=True, help='rooms is required')
 # property_args.add_argument('agent_id', type=int, required=True, help='agent_id is required')
