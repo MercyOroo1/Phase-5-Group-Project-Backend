@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash
 from datetime import datetime
 
+
 db = SQLAlchemy()
 
 class User(db.Model):
@@ -174,6 +175,12 @@ class Property(db.Model):
 
 
     
+
+
+class BoostedProperty(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.id'), nullable=False)
+    boosted_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Photo(db.Model):
     __tablename__ = 'photos'
