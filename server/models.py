@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -26,7 +27,7 @@ class User(db.Model):
     profile = db.relationship('Profile', uselist=False, back_populates='user', cascade='all, delete-orphan')
     payments = db.relationship('Payment', back_populates='user', cascade='all, delete-orphan')
     purchase_requests = db.relationship('PurchaseRequest', back_populates='user', cascade='all, delete-orphan')
-
+    userpayments = db.relationship('UserPayment', back_populates = 'users', cascade = 'all, delete-orphan')
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
@@ -159,12 +160,16 @@ class Property(db.Model):
     photos = db.relationship('Photo', back_populates='property', cascade='all, delete-orphan')
     agent = db.relationship('Agent', back_populates='properties')
     saved_by = db.relationship('SavedProperty', back_populates='property')
-    contact_messages = db.relationship('ContactMessage', back_populates='property')
+    contact_messages = db.relationship('ContactMessage', back_populates='property', cascade = 'all, delete-orphan')
     reviews = db.relationship('Review', back_populates='property')
-    features = db.relationship('Feature', back_populates='property')
-    payments = db.relationship('Payment', back_populates='property')
-    purchase_requests = db.relationship('PurchaseRequest', back_populates='property')
 
+    
+    feature = db.relationship('Feature', back_populates='properties', cascade = 'all, delete-orphan')
+
+
+    payments = db.relationship('Payment', back_populates='property')
+    purchase_requests = db.relationship('PurchaseRequest', back_populates='property', cascade = 'all, delete-orphan')
+    userpayment = db.relationship('UserPayment', back_populates = 'property', cascade = 'all, delete-orphan')
 
 
 
@@ -225,7 +230,11 @@ class Feature(db.Model):
     description = db.Column(db.String, nullable=False)
     property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
 
-    property = db.relationship('Property', back_populates='features')
+    properties = db.relationship('Property', back_populates='feature')
+
+
+   
+
 class Payment(db.Model):
     __tablename__ = 'payments'
 
@@ -256,3 +265,22 @@ class PurchaseRequest(db.Model):
 
     user = db.relationship('User', back_populates='purchase_requests')
     property = db.relationship('Property', back_populates='purchase_requests')
+
+
+class UserPayment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    currency = db.Column(db.String(3), default='usd')
+    payment_method = db.Column(db.String(50))
+    payment_status = db.Column(db.String(20), default='pending')
+    transaction_id = db.Column(db.String(255))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    property = db.relationship('Property', back_populates = 'userpayment')
+    users = db.relationship('User', back_populates = 'userpayments')
+
+    def __repr__(self):
+        return f'<UserPayment {self.id}>'
+

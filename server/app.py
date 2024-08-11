@@ -33,6 +33,10 @@ import os
 import stripe
 load_dotenv()
 
+from routes.userpayments import userpayment_bp
+
+
+
 app = Flask(__name__)
 CORS(app)
 
@@ -63,8 +67,9 @@ app.register_blueprint(admin_bp)
 app.register_blueprint(profile_bp)
 app.register_blueprint(features_bp)
 app.register_blueprint(boost_bp)
-app.register_blueprint(payments_bp)
+# app.register_blueprint(payments_bp)
 app.register_blueprint(purchase_request_bp)
+app.register_blueprint(userpayment_bp)
 
 
 migrate = Migrate(app=app, db=db)
