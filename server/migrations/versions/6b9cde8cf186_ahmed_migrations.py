@@ -1,8 +1,8 @@
-"""added relationships
+"""ahmed migrations
 
-Revision ID: c10dac602187
+Revision ID: 6b9cde8cf186
 Revises: 
-Create Date: 2024-08-07 13:14:26.148788
+Create Date: 2024-08-11 12:17:19.682498
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'c10dac602187'
+revision = '6b9cde8cf186'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -35,17 +35,25 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
-    op.create_table('features',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(), nullable=False),
-    sa.Column('description', sa.String(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('roles',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
+    )
+    op.create_table('listing_fees',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('fee_amount', sa.Float(), nullable=False),
+    sa.Column('fee_type', sa.String(length=50), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('agent_id', sa.Integer(), nullable=True),
+    sa.Column('start_date', sa.DateTime(), nullable=False),
+    sa.Column('end_date', sa.DateTime(), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=True),
+    sa.Column('payment_frequency', sa.String(length=20), nullable=False),
+    sa.Column('subscription_status', sa.String(length=20), nullable=False),
+    sa.ForeignKeyConstraint(['agent_id'], ['agents.id'], ),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('properties',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -57,10 +65,9 @@ def upgrade():
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('listing_status', sa.String(length=20), nullable=False),
-    sa.Column('feature_id', sa.Integer(), nullable=True),
+    sa.Column('boosted', sa.Boolean(), nullable=True),
     sa.Column('agent_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['agent_id'], ['agents.id'], name='fk_property_agent'),
-    sa.ForeignKeyConstraint(['feature_id'], ['features.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('users',
@@ -69,7 +76,7 @@ def upgrade():
     sa.Column('email', sa.String(), nullable=False),
     sa.Column('password', sa.String(), nullable=False),
     sa.Column('reset_token', sa.String(), nullable=True),
-    sa.Column('token_expiry', sa.String(), nullable=True),
+    sa.Column('token_expiry', sa.DateTime(), nullable=True),
     sa.Column('confirmed', sa.Boolean(), nullable=True),
     sa.Column('active', sa.Boolean(), nullable=True),
     sa.Column('role_id', sa.Integer(), nullable=True),
@@ -114,11 +121,57 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name='fk_contactmessage_user'),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('features',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(), nullable=False),
+    sa.Column('description', sa.String(), nullable=False),
+    sa.Column('property_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['property_id'], ['properties.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('payments',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('property_id', sa.Integer(), nullable=True),
+    sa.Column('amount', sa.Float(), nullable=False),
+    sa.Column('currency', sa.String(length=3), nullable=False),
+    sa.Column('payment_method', sa.String(length=50), nullable=False),
+    sa.Column('payment_status', sa.String(length=20), nullable=False),
+    sa.Column('transaction_id', sa.String(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('listing_fee_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['listing_fee_id'], ['listing_fees.id'], ),
+    sa.ForeignKeyConstraint(['property_id'], ['properties.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('transaction_id')
+    )
     op.create_table('photos',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('photo_url', sa.String(), nullable=False),
     sa.Column('property_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['property_id'], ['properties.id'], name='fk_photo_property'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('profiles',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('photo_url', sa.String(), nullable=True),
+    sa.Column('bio', sa.String(), nullable=True),
+    sa.Column('phone_number', sa.String(), nullable=True),
+    sa.Column('website', sa.String(), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('user_id')
+    )
+    op.create_table('purchase_requests',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('property_id', sa.Integer(), nullable=False),
+    sa.Column('request_date', sa.DateTime(), nullable=True),
+    sa.Column('status', sa.String(length=20), nullable=True),
+    sa.ForeignKeyConstraint(['property_id'], ['properties.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('reviews',
@@ -140,34 +193,23 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name='fk_savedproperty_user'),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('profiles',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('photo_url', sa.String(), nullable=True),
-    sa.Column('bio', sa.String(), nullable=True),
-    sa.Column('phone_number', sa.String(), nullable=True),
-    sa.Column('website', sa.String(), nullable=True),
-    sa.Column('agent_application_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['agent_application_id'], ['agent_applications.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('agent_application_id'),
-    sa.UniqueConstraint('user_id')
-    )
     # ### end Alembic commands ###
 
 
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_table('profiles')
     op.drop_table('saved_properties')
     op.drop_table('reviews')
+    op.drop_table('purchase_requests')
+    op.drop_table('profiles')
     op.drop_table('photos')
+    op.drop_table('payments')
+    op.drop_table('features')
     op.drop_table('contact_messages')
     op.drop_table('agent_applications')
     op.drop_table('users')
     op.drop_table('properties')
+    op.drop_table('listing_fees')
     op.drop_table('roles')
-    op.drop_table('features')
     op.drop_table('agents')
     # ### end Alembic commands ###
