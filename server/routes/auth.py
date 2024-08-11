@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import Blueprint, jsonify, request, session
 from flask_restful import Api, Resource, reqparse
-from models import User, db
+from models import User, db, Profile
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import (
     create_access_token, JWTManager, create_refresh_token, 
@@ -94,6 +94,9 @@ class Register(Resource):
         )
         db.session.add(new_user)
         db.session.commit()
+        new_profile = Profile(user_id = new_user.id)
+        db.session.add(new_profile)
+        db.session.commit()
         
         # Generate confirmation token
         token = serializer.dumps(data.get('email'), salt='email-confirm')
@@ -139,7 +142,7 @@ class Login(Resource):
 
         token = create_access_token(identity=user.id)
         refresh_token = create_refresh_token(identity=user.id)
-        return {"token": token, "refresh_token": refresh_token, 'role_id': user.role_id}
+        return {"token": token, "refresh_token": refresh_token, "user_id": user.id, 'role_id': user.role_id}
 
     @jwt_required(refresh=True)
     def get(self):
