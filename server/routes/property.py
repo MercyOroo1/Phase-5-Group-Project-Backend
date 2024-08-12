@@ -183,4 +183,3 @@ class GetAgentPropeties(Resource):
 property_api.add_resource(GetAgentPropeties, '/agents')
 property_api.add_resource(BoostProperty, '/boost')
 property_api.add_resource(GetBoostedProperties, '/boosted')
-
