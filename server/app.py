@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 from flask_restful import Api, Resource, reqparse
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from flask_migrate import Migrate
@@ -27,13 +27,25 @@ from routes.purchaserequest import purchase_request_bp,create_resources3
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///property.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['SECRET_KEY'] = "We are winners"
 app.config['JWT_SECRET_KEY'] = 'We are winners' 
+app.config['PROPAGATE_EXCEPTIONS'] = True  # Ensures exceptions are propagated (useful for debugging)
+
 jwt = JWTManager(app)
+
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
+
+
+@app.route('/profile', methods=['OPTIONS'])
+def handle_profile_options():
+    response = jsonify({'status': 'ok'})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, PUT, DELETE, OPTIONS')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    return response
 
 # Register blueprints
 app.register_blueprint(auth_bp)
@@ -83,4 +95,4 @@ create_resources3(mail)
 #         return f'An error occurred: {str(e)}'
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5050, debug=True)
+    app.run(host='127.0.0.1', port=5050, debug=True)
