@@ -2,9 +2,11 @@ from flask_restful import Resource, Api
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import Property, db
 from flask import Blueprint
+from flask_cors import CORS
 
 boost_bp = Blueprint("boost", __name__, url_prefix="/boost")
 boost_bp_api = Api(boost_bp)
+CORS(boost_bp)
 
 class BoostProperty(Resource):
     @jwt_required()

@@ -161,26 +161,25 @@ class Property(db.Model):
     photos = db.relationship('Photo', back_populates='property', cascade='all, delete-orphan')
     agent = db.relationship('Agent', back_populates='properties')
     saved_by = db.relationship('SavedProperty', back_populates='property')
-    contact_messages = db.relationship('ContactMessage', back_populates='property', cascade = 'all, delete-orphan')
+    contact_messages = db.relationship('ContactMessage', back_populates='property', cascade='all, delete-orphan')
     reviews = db.relationship('Review', back_populates='property')
+    boosted_property = db.relationship('BoostedProperty', back_populates='property', uselist=False)
 
-    
-    feature = db.relationship('Feature', back_populates='properties', cascade = 'all, delete-orphan')
-
-
+    feature = db.relationship('Feature', back_populates='properties', cascade='all, delete-orphan')
     payments = db.relationship('Payment', back_populates='property')
-    purchase_requests = db.relationship('PurchaseRequest', back_populates='property', cascade = 'all, delete-orphan')
-    userpayment = db.relationship('UserPayment', back_populates = 'property', cascade = 'all, delete-orphan')
-
-
-
-    
+    purchase_requests = db.relationship('PurchaseRequest', back_populates='property', cascade='all, delete-orphan')
+    userpayment = db.relationship('UserPayment', back_populates='property', cascade='all, delete-orphan')
 
 
 class BoostedProperty(db.Model):
+    __tablename__ = 'boosted_properties'
     id = db.Column(db.Integer, primary_key=True)
-    property_id = db.Column(db.Integer, db.ForeignKey('property.id'), nullable=False)
+    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
     boosted_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    property = db.relationship('Property', back_populates='boosted_property')
+
+
 
 class Photo(db.Model):
     __tablename__ = 'photos'
