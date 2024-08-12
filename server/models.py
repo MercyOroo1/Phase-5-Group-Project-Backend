@@ -123,7 +123,7 @@ class AgentApplication(db.Model):
 
     
 class Agent(db.Model):
-    __tablename__ = 'agents'
+    __tablename__ = 'agents' 
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, nullable=False)
@@ -277,6 +277,11 @@ class UserPayment(db.Model):
     payment_status = db.Column(db.String(20), default='pending')
     transaction_id = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    installment_amount = db.Column(db.Float)
+    total_installments = db.Column(db.Integer)
+    paid_installments = db.Column(db.Integer, default=0)
+
 
     property = db.relationship('Property', back_populates = 'userpayment')
     users = db.relationship('User', back_populates = 'userpayments')

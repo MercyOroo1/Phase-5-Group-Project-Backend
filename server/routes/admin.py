@@ -165,3 +165,4 @@ class GetApplicationList(Resource):
         }, 200
 
 admin_api.add_resource(GetApplicationList, '/applications')
+

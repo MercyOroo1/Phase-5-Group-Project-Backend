@@ -1,6 +1,6 @@
 from flask import Flask
-from flask_restful import Api
-from flask_jwt_extended import JWTManager
+
+# from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
@@ -9,7 +9,7 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 
 # Import blueprints
-from routes.auth import auth_bp, bcrypt, create_resources
+from routes.auth import auth_bp, bcrypt, create_resources,jwt
 from routes.contactmessage import contact_bp
 from routes.features import features_bp
 from routes.profile import profile_bp
@@ -24,6 +24,7 @@ from routes.boostproperty import boost_bp
 from routes.payments import payments_bp
 from routes.purchaserequest import purchase_request_bp, create_resources3
 from routes.userpayments import userpayment_bp
+from routes.listingFee import listingfee_bp
 import os
 from models import db, User
 
@@ -39,7 +40,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///property.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['SECRET_KEY'] = "We are winners"
 app.config['JWT_SECRET_KEY'] = 'We are winners' 
-jwt = JWTManager(app)
+
 
 
 
@@ -47,7 +48,7 @@ db.init_app(app)
 
 migrate = Migrate(app=app, db=db)
 
-jwt = JWTManager(app)
+jwt.init_app(app)
 app.config['JWT_SECRET_KEY'] = 'We are winners' 
 bcrypt = Bcrypt()
 bcrypt.init_app(app)
@@ -77,6 +78,7 @@ app.register_blueprint(boost_bp)
 app.register_blueprint(payments_bp)
 app.register_blueprint(purchase_request_bp)
 app.register_blueprint(userpayment_bp)
+app.register_blueprint(listingfee_bp)
 
 # Create resources
 create_resources(mail)

@@ -24,6 +24,7 @@ payment_parser.add_argument('amount', type=float, required=True, help='Amount ca
 payment_parser.add_argument('property_id', type=int, required=True, help='Property ID cannot be blank')
 payment_parser.add_argument('user_id', type=int, required=True, help='User ID cannot be blank')
 
+
 # class UserPaymentResource(Resource):
 #     # @jwt_required()
 #     def post(self):
@@ -98,14 +99,13 @@ payment_parser.add_argument('user_id', type=int, required=True, help='User ID ca
 # # Add resource routes to the API
 # userpayment_api.add_resource(UserPaymentResource, '/')
 
-
-
 class CreatePaymentIntent(Resource):
     def post(self):
         data = request.get_json()
         amount = data.get('amount')
         property_id = data.get('property_id')
         user_id = data.get('user_id')
+        total_installments = data.get('total_installments', 3)  # Default to 3 installment 
 
         if not amount or not property_id or not user_id:
             return {'message': 'Amount, property ID, and user ID are required'}, 400
@@ -138,7 +138,7 @@ class CreatePaymentIntent(Resource):
             return {'message': f"Stripe error: {e.user_message or str(e)}"}, 400
         except Exception as e:
             return {'message': f"An error occurred: {str(e)}"}, 500
-userpayment_api.add_resource(CreatePaymentIntent, '/create-intent')
+
 
 class ConfirmPayment(Resource):
     def post(self):
@@ -147,6 +147,8 @@ class ConfirmPayment(Resource):
         amount = data.get('amount')
         property_id = data.get('property_id')
         payment_intent_id = data.get('payment_intent_id')
+        total_installments = data.get('total_installments', 1)
+        installment_amount = data.get('installment_amount', amount / total_installments)
 
         if not user_id or not amount or not property_id or not payment_intent_id:
             return {'message': 'User ID, amount, property ID, and payment intent ID are required'}, 400
@@ -178,7 +180,9 @@ class ConfirmPayment(Resource):
                     property_id=property_id,
                     payment_method='stripe',
                     payment_status='successful',
-                    transaction_id=payment_intent.id
+                    transaction_id=payment_intent.id,
+                    installment_amount=installment_amount,
+                    total_installments=total_installments
                 )
                 db.session.add(payment)
                 db.session.commit()
@@ -189,12 +193,12 @@ class ConfirmPayment(Resource):
 
                 return {'message': 'Payment succeeded and property status updated successfully'}, 200
             else:
-             return {'message': 'Payment failed. Please try again.'}, 400
-        except stripe.error.StripeError as e:                
-
+                return {'message': 'Payment failed. Please try again.'}, 400
+        except stripe.error.StripeError as e:
             return {'message': f"Stripe error: {e.user_message or str(e)}"}, 400
         except Exception as e:
-           db.session.rollback()
-           return {'message': f"An error occurred: {str(e)}"}, 500
+            db.session.rollback()
+            return {'message': f"An error occurred: {str(e)}"}, 500
+
         
 userpayment_api.add_resource(ConfirmPayment, '/confirm-payment')
