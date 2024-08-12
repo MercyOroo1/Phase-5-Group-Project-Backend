@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
 
@@ -33,14 +33,17 @@ class User(db.Model):
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
-class Features(db.Model):
-    __tablename__ = 'features'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    description = db.Column(db.String, nullable=False)
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
-    property = db.relationship('Property', back_populates='features')
-    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'))
+# class Features(db.Model):
+#     __tablename__ = 'features'
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String, nullable=False)
+#     description = db.Column(db.String, nullable=False)
+
+#     property = db.relationship('Property', back_populates='features')
+#     property_id = db.Column(db.Integer, db.ForeignKey('properties.id'))
 class ListingFee(db.Model):
     __tablename__ = 'listing_fees'
     
@@ -85,7 +88,6 @@ class AgentApplication(db.Model):
     languages = db.Column(db.String, nullable=False)
     agency_name = db.Column(db.String, nullable=False)
     listed_properties = db.Column(db.Integer, nullable=False, default=0)
-    status = db.Column(db.String(20), default='pending', nullable=False)  
     status = db.Column(db.String(20), default='pending', nullable=False)  # 'pending', 'approved', 'rejected'
 
     
@@ -112,7 +114,6 @@ class Profile(db.Model):
     website = db.Column(db.String, nullable=True)
     user = db.relationship('User', back_populates='profile')
 
-    user = db.relationship('User', back_populates='profile')
 
 
 
@@ -125,7 +126,7 @@ class Feature(db.Model):
     name = db.Column(db.String, nullable=False)
     description = db.Column(db.String, nullable=False)
     property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
-    properties = db.relationship('Property', back_populates='feature')
+    property = db.relationship('Property', back_populates='features')
 
    
 
@@ -150,8 +151,8 @@ class Property(db.Model):
     saved_by = db.relationship('SavedProperty', back_populates='property')
     contact_messages = db.relationship('ContactMessage', back_populates='property')
     reviews = db.relationship('Review', back_populates='property')
-    features = db.relationship('Features', back_populates='property')
-    feature = db.relationship('Feature', back_populates='properties')
+    features = db.relationship('Feature', back_populates='property')
+    # feature = db.relationship('Feature', back_populates='properties')
     payments = db.relationship('Payment', back_populates='property')
     purchase_requests = db.relationship('PurchaseRequest', back_populates='property')
 
@@ -232,8 +233,8 @@ class Payment(db.Model):
     __tablename__ = 'payments'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', name='fk_payment_user'), nullable=False)
+    property_id = db.Column(db.Integer, db.ForeignKey('properties.id', name='fk_payment_property'), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     currency = db.Column(db.String(3), nullable=False)  # e.g., 'USD'
     payment_method = db.Column(db.String(50), nullable=False)  # e.g., 'credit_card', 'paypal'
@@ -247,6 +248,7 @@ class Payment(db.Model):
 
 
 class PurchaseRequest(db.Model):
+    __tablename__ = 'purchase_requests'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
