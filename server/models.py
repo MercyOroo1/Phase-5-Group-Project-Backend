@@ -26,7 +26,7 @@ class User(db.Model):
     role = db.relationship('Role', back_populates='users')
     applications = db.relationship('AgentApplication', back_populates='user', cascade='all, delete-orphan')
     profile = db.relationship('Profile', uselist=False, back_populates='user', cascade='all, delete-orphan')
-    payments = db.relationship('Payment', back_populates='user', cascade='all, delete-orphan')
+    # payments = db.relationship('Payment', back_populates='user', cascade='all, delete-orphan')
     purchase_requests = db.relationship('PurchaseRequest', back_populates='user', cascade='all, delete-orphan')
     userpayments = db.relationship('UserPayment', back_populates = 'users', cascade = 'all, delete-orphan')
     def set_password(self, password):
@@ -143,6 +143,7 @@ class Agent(db.Model):
     properties = db.relationship('Property', back_populates='agent', cascade='all, delete-orphan')
     messages = db.relationship('ContactMessage', back_populates='agent', cascade='all, delete-orphan')
     listing_fees = db.relationship('ListingFee', back_populates='agent', cascade='all, delete-orphan')
+    payments = db.relationship('Payment', back_populates = 'agent', cascade = 'all, delete-orphan')
 
 class Property(db.Model):
     __tablename__ = 'properties'
@@ -161,14 +162,20 @@ class Property(db.Model):
     photos = db.relationship('Photo', back_populates='property', cascade='all, delete-orphan')
     agent = db.relationship('Agent', back_populates='properties')
     saved_by = db.relationship('SavedProperty', back_populates='property')
-    contact_messages = db.relationship('ContactMessage', back_populates='property', cascade='all, delete-orphan')
+    contact_messages = db.relationship('ContactMessage', back_populates='property', cascade = 'all, delete-orphan')
     reviews = db.relationship('Review', back_populates='property')
-    boosted_property = db.relationship('BoostedProperty', back_populates='property', uselist=False)
 
-    feature = db.relationship('Feature', back_populates='properties', cascade='all, delete-orphan')
+    
+    feature = db.relationship('Feature', back_populates='properties', cascade = 'all, delete-orphan')
+
+
     payments = db.relationship('Payment', back_populates='property')
-    purchase_requests = db.relationship('PurchaseRequest', back_populates='property', cascade='all, delete-orphan')
-    userpayment = db.relationship('UserPayment', back_populates='property', cascade='all, delete-orphan')
+    purchase_requests = db.relationship('PurchaseRequest', back_populates='property', cascade = 'all, delete-orphan')
+    userpayment = db.relationship('UserPayment', back_populates = 'property', cascade = 'all, delete-orphan')
+
+
+
+    
 
 
 class BoostedProperty(db.Model):
@@ -223,10 +230,10 @@ class Review(db.Model):
     rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    property_id = db.Column(db.Integer, db.ForeignKey('properties.id', name='fk_review_property'), nullable=False)
+    
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', name='fk_review_user'), nullable=False)
 
-    property = db.relationship('Property', back_populates='reviews')
+    
     user = db.relationship('User', back_populates='reviews')
 
 class Feature(db.Model):
@@ -247,19 +254,20 @@ class Payment(db.Model):
 
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)  # Changed to nullable=True
-    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=True)  # Changed to nullable=True
+   
     amount = db.Column(db.Float, nullable=False)
     currency = db.Column(db.String(3), nullable=False)
     payment_method = db.Column(db.String(50), nullable=False)
     payment_status = db.Column(db.String(20), nullable=False)
     transaction_id = db.Column(db.String, unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp(), nullable=True)
-    property = db.relationship('Property', back_populates='payments', uselist=False)
+    # property = db.relationship('Property', back_populates='payments', uselist=False)
     listing_fee_id = db.Column(db.Integer, db.ForeignKey('listing_fees.id'), nullable=False)
     listing_fee = db.relationship('ListingFee', back_populates='payments')
+    agent_id = db.Column(db.Integer, db.ForeignKey('agents.id'), nullable=False) 
+    
 
-    user = db.relationship('User', back_populates='payments')
+    agent = db.relationship('Agent', back_populates='payments')
 
 class PurchaseRequest(db.Model):
     __tablename__ = 'purchase_requests'
@@ -267,7 +275,7 @@ class PurchaseRequest(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
     request_date = db.Column(db.DateTime, default=db.func.current_timestamp())
-    status = db.Column(db.String(20), default='pending')  # 'pending', 'approved', 'rejected'
+    status = db.Column(db.String(20), default='pending')  
 
     user = db.relationship('User', back_populates='purchase_requests')
     property = db.relationship('Property', back_populates='purchase_requests')
@@ -283,7 +291,8 @@ class UserPayment(db.Model):
     payment_status = db.Column(db.String(20), default='pending')
     transaction_id = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
+    installment_amount = db.Column(db.Float, nullable=True)
+    total_installments =  db.Column(db.Integer, nullable=True)
     property = db.relationship('Property', back_populates = 'userpayment')
     users = db.relationship('User', back_populates = 'userpayments')
 
