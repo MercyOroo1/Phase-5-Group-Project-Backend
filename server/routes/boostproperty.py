@@ -14,9 +14,9 @@ class BoostProperty(Resource):
         property = Property.query.filter_by(agent_id=current_user_id).order_by(Property.created_at.desc()).first()
         
         if property:
-            previous_boosted_property = Property.query.filter_by(boosted=True).first()
+            previous_boosted_property = Property.query.filter_by(boosted=False).first()
             if previous_boosted_property:
-                previous_boosted_property.boosted = False
+                previous_boosted_property.boosted = True
                 db.session.commit()
             
             property.boosted = True
