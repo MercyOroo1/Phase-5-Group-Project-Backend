@@ -1,9 +1,10 @@
 from flask_restful import Api, Resource, reqparse
-from models import User, db, AgentApplication, Agent
+from models import User, db, AgentApplication, Agent,Payment
 from flask import Blueprint
 from routes.auth import allow
 from flask_jwt_extended import jwt_required
 from flask_mail import Message
+
 
 
 admin_bp = Blueprint('admin_bp', __name__, url_prefix='/admin')
@@ -83,44 +84,26 @@ class AgentApplicationAdminResource(Resource):
             return {'message': 'Invalid status.'}, 400
 
         application.status = data['status']
-        new_agent_id = None
-
-        # If approved, create an agent record
-        if data['status'] == 'approved':
-            new_agent = Agent(
-                user_id=application.user_id,
-                license_number=application.license_number,
-                full_name=application.full_name,
-                email=application.email,
-                experience=application.experience,
-                phone_number=application.phone_number,
-                languages=application.languages,
-                agency_name=application.agency_name,
-                photo_url=application.photo_url,
-
-                for_sale=0,  # Initial value
-                sold=0,      # Initial value
-                listed_properties=0  # Initial value
-            )
-            new_role = User.query.get(application.user_id)
-            new_role.role_id = 2
-            db.session.add(new_agent)
-            db.session.add(new_role)
-            db.session.flush()  
-            new_agent_id = new_agent.id
 
         try:
             db.session.commit()
 
-            
             subject = ""
             body = ""
             if data['status'] == 'approved':
                 subject = "Agent Application Approved"
-                body = f"Dear {application.full_name},\n\nWe are pleased to inform you that your application to become an agent has been approved. Welcome to the team!"
+                payment_url = f"http://localhost:5173/agent-payment?userId={application.user_id}&applicationId={application.id}"  # Replace with your actual payment URL
+                body = (f"Dear {application.full_name},\n\n"
+                        "We are pleased to inform you that your application to become an agent has been approved. "
+                        "To complete your registration, please pay the subscription fee by clicking the link below:\n\n"
+                        f"{payment_url}\n\n"
+                        "Once the payment is successful, your agent account will be activated.")
+
             elif data['status'] == 'rejected':
                 subject = "Agent Application Rejected"
-                body = f"Dear {application.full_name},\n\nWe regret to inform you that your application to become an agent has been rejected. Thank you for your interest."
+                body = (f"Dear {application.full_name},\n\n"
+                        "We regret to inform you that your application to become an agent has been rejected. "
+                        "Thank you for your interest in our platform.")
 
             msg = Message(subject,
                           sender="mercy.oroo.ke@gmail.com",
@@ -134,13 +117,83 @@ class AgentApplicationAdminResource(Resource):
 
         return {
             'message': 'Application status updated successfully.',
-            'application_status': application.status,
-            'new_agent_id': new_agent_id
+            'application_status': application.status
         }, 200
 
 
+
+
+
+
+
+
+class AgentPaymentResource(Resource):
+    def __init__(self, mail):
+        self.mail = mail
+
+    @jwt_required()
+    @allow(1)
+    def post(self, application_id):
+        application = AgentApplication.query.get_or_404(application_id)
+        
+
+        payment = Payment.query.filter_by (agent_id = application.user_id).first()
+        if not payment: 
+            return {'msg':'payment not found'}
+        if payment and payment.payment_status == 'successful':
+
+        # Here you would normally validate the payment status with the payment gateway
+        # Assuming the payment was successful, proceed with creating the agent
+
+         new_agent = Agent(
+            user_id=application.user_id,
+            license_number=application.license_number,
+            full_name=application.full_name,
+            email=application.email,
+            experience=application.experience,
+            phone_number=application.phone_number,
+            languages=application.languages,
+            agency_name=application.agency_name,
+            photo_url=application.photo_url,
+            for_sale=0,  # Initial value
+            sold=0,      # Initial value
+            listed_properties=0  # Initial value
+        )
+        
+         new_role = User.query.get(application.user_id)
+         new_role.role_id = 2  # Change the role to agent
+
+         db.session.add(new_agent)
+         db.session.add(new_role)
+
+        try:
+            db.session.commit()
+
+            # Send confirmation email to the agent
+            subject = "Agent Account Activated"
+            body = (f"Dear {application.full_name},\n\n"
+                    "Thank you for completing your subscription payment. "
+                    "Your agent account has been successfully activated. "
+                    "You can now start listing properties on our platform.\n\n"
+                    "Welcome aboard!")
+
+            msg = Message(subject,
+                          sender="mercy.oroo.ke@gmail.com",
+                          recipients=[application.email])
+            msg.body = body
+            self.mail.send(msg)
+
+            return {
+                'message': 'Payment successful and agent account created.',
+                'new_agent_id': new_agent.id
+            }, 201
+
+        except Exception as e:
+            db.session.rollback()
+            return {'message': 'An error occurred while creating the agent.', 'error': str(e)}, 500
 def create_resources2(mail):
  admin_api.add_resource(AgentApplicationAdminResource, "/applications/<int:application_id>", resource_class_kwargs={'mail': mail})
+ admin_api.add_resource(AgentPaymentResource, "/applications/<int:application_id>/payment", resource_class_kwargs={'mail': mail})
 
 class GetApplicationList(Resource):
     @jwt_required()
