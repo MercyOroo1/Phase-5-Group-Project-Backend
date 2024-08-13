@@ -133,6 +133,19 @@ class PhotosOfProperty(Resource):
         property = Property.query.get_or_404(id)
         photos = property.photos
         return [{'id': photo.id, 'photo_url': photo.photo_url} for photo in photos]
+    
+    def put(self ,id):
+        property = Property.query.get_or_404(id)
+        args = reqparse.RequestParser()
+        args.add_argument('photo_url', type=str, required=True, help='photo_url is required')
+        args = args.parse_args()
+        photo = Photo.query.filter_by(photo_url=args['photo_url'], property_id=property.id).first()
+        if photo:
+            return {"message": "Photo already exists"}, 400
+        photo = Photo(photo_url=args['photo_url'], property_id=property.id)
+        db.session.add(photo)
+        db.session.commit()
+        return {"message": "Photo was successfully created"}, 201
 
     @jwt_required()
     def post(self, id):

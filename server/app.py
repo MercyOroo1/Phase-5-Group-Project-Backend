@@ -26,6 +26,7 @@ from routes.purchaserequest import purchase_request_bp, create_resources3
 from routes.userpayments import userpayment_bp
 from routes.listingFee import listingfee_bp
 import os
+import stripe
 from models import db, User
 
 # Load environment variables
@@ -34,6 +35,8 @@ load_dotenv()
 # Initialize Flask app
 app = Flask(__name__)
 CORS(app)
+stripe.api_key = os.getenv('STRIPE_TEST_SECRET_KEY')
+
 
 # App configurations
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///property.db'
