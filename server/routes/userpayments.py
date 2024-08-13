@@ -29,6 +29,7 @@ payment_parser = reqparse.RequestParser()
 payment_parser.add_argument('amount', type=float, required=True, help='Amount cannot be blank')
 payment_parser.add_argument('property_id', type=int, required=True, help='Property ID cannot be blank')
 payment_parser.add_argument('user_id', type=int, required=True, help='User ID cannot be blank')
+payment_parser.add_argument('installment_amount', type=float, required=True, help='installment cannot be blank')
 
 
 
@@ -61,7 +62,7 @@ class CreatePaymentIntent(Resource):
 
         try:
             payment_intent = stripe.PaymentIntent.create(
-                amount=int(amount * 100),  # Convert amount to cents
+                amount=int(installment_amount * 100),  # Convert amount to cents
                 currency='usd',
                 description='User payment',
                 metadata={
