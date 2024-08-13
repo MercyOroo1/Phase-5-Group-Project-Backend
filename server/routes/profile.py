@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_restful import Api, Resource, reqparse
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import db, Profile
+from models import db, Profile, User
 
 profile_bp = Blueprint('profile', __name__, url_prefix='/profile')
 profile_api = Api(profile_bp)
@@ -21,6 +21,8 @@ class UserProfile(Resource):
         if profile is None:
             return {'message': 'Profile not found'}, 404
         return jsonify({
+            'full_name': profile.user.full_name,
+            "email":profile.user.email,
             'photo_url': profile.photo_url,
             'bio': profile.bio,
             'phone_number': profile.phone_number,

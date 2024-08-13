@@ -15,6 +15,7 @@ from routes.features import features_bp
 from routes.profile import profile_bp
 from routes.photo import photo_bp
 from routes.admin import admin_bp, create_resources2
+
 from routes.property import property_bp
 from routes.agent import agent_bp
 from routes.user import user_bp
@@ -24,6 +25,7 @@ from routes.boostproperty import boost_bp
 from routes.payments import payments_bp
 from routes.purchaserequest import purchase_request_bp, create_resources3
 from routes.userpayments import userpayment_bp
+from routes.listingFee import listingfee_bp,create_resources4
 import os
 from models import db, User
 
@@ -77,11 +79,12 @@ app.register_blueprint(boost_bp)
 app.register_blueprint(payments_bp)
 app.register_blueprint(purchase_request_bp)
 app.register_blueprint(userpayment_bp)
-
+app.register_blueprint(listingfee_bp)
 # Create resources
 create_resources(mail)
 create_resources2(mail)
 create_resources3(mail)
+create_resources4(mail)
 
 @jwt.user_lookup_loader
 def user_lookup_callback(_jwt_header, jwt_data):
