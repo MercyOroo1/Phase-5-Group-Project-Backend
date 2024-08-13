@@ -45,6 +45,6 @@ class AgentMessages(Resource):
         messages = ContactMessage.query.filter_by(agent_id = current_user_id )
         if not messages:
             return {'msg': 'You have no messages'}
-        return [{'id': message.id, 'name': message.name, 'email': message.email, 'subject': message.subject, 'property_id': message.property_id, 'user_id': message.user_id, "user_name":message.user.full_name} for message in messages]
+        return [{'id': message.id, 'name': message.name, 'email': message.email, 'subject': message.subject, 'message': message.message,'property_id': message.property_id, 'user_id': message.user_id, "user_name":message.user.full_name} for message in messages]
     
 contact_api.add_resource(AgentMessages, '/agent')    

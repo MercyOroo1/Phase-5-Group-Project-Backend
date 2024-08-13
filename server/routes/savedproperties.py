@@ -30,6 +30,7 @@ class UserSavedProperties(Resource):
                 'property_type': saved_property.property.property_type,
                 'listing_status': saved_property.property.listing_status,
                 # 'rooms': saved_property.property.rooms,
+                # rooms': saved_property.property.rooms,
                 'photos': [{'id': photo.id, 'photo_url': photo.photo_url} for photo in saved_property.property.photos]
             }
         } for saved_property in saved_properties], 200

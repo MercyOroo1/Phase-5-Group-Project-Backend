@@ -96,7 +96,6 @@ class AgentApplicationAdminResource(Resource):
                 phone_number=application.phone_number,
                 languages=application.languages,
                 agency_name=application.agency_name,
-                photo_url=application.photo_url,
                 for_sale=0,  # Initial value
                 sold=0,      # Initial value
                 listed_properties=0  # Initial value
