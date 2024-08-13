@@ -286,7 +286,8 @@ class UserPayment(db.Model):
     payment_status = db.Column(db.String(20), default='pending')
     transaction_id = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
+    installment_amount = db.Column(db.Float, nullable=True)
+    total_installments =  db.Column(db.Integer, nullable=True)
     property = db.relationship('Property', back_populates = 'userpayment')
     users = db.relationship('User', back_populates = 'userpayments')
 
