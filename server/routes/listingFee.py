@@ -25,8 +25,7 @@ listingfee_parser.add_argument('payment_frequency', type=str, default='monthly')
 listingfee_parser.add_argument('subscription_status', type=str, default='active')
 
 
-stripe.api_key = os.getenv('STRIPE_API_KEY')  
-
+stripe.api_key = os.getenv('STRIPE_TEST_SECRET_KEY')
 class ListingFeeResource(Resource):
     def post(self):
         args = listingfee_parser.parse_args()

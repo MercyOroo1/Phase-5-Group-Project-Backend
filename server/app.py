@@ -28,9 +28,11 @@ from routes.userpayments import userpayment_bp
 from routes.listingFee import listingfee_bp,create_resources4
 import os
 from models import db, User
-
+import stripe
 # Load environment variables
 load_dotenv()
+
+stripe.api_key = os.getenv('STRIPE_TEST_SECRET_KEY')
 
 # Initialize Flask app
 app = Flask(__name__)
