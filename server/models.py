@@ -163,13 +163,13 @@ class Property(db.Model):
     agent = db.relationship('Agent', back_populates='properties')
     saved_by = db.relationship('SavedProperty', back_populates='property')
     contact_messages = db.relationship('ContactMessage', back_populates='property', cascade = 'all, delete-orphan')
-    reviews = db.relationship('Review', back_populates='property')
+    
 
     
     feature = db.relationship('Feature', back_populates='properties', cascade = 'all, delete-orphan')
 
 
-    payments = db.relationship('Payment', back_populates='property')
+    # payments = db.relationship('Payment', back_populates='property')
     purchase_requests = db.relationship('PurchaseRequest', back_populates='property', cascade = 'all, delete-orphan')
     userpayment = db.relationship('UserPayment', back_populates = 'property', cascade = 'all, delete-orphan')
 
@@ -179,14 +179,9 @@ class Property(db.Model):
 
 
 class BoostedProperty(db.Model):
-    __tablename__ = 'boosted_properties'
     id = db.Column(db.Integer, primary_key=True)
     property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
     boosted_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    property = db.relationship('Property', back_populates='boosted_property')
-
-
 
 class Photo(db.Model):
     __tablename__ = 'photos'
@@ -298,4 +293,3 @@ class UserPayment(db.Model):
 
     def __repr__(self):
         return f'<UserPayment {self.id}>'
-
