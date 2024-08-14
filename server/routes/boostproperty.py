@@ -36,7 +36,7 @@ class GetBoostedProperties(Resource):
             'price': property.price,
             'property_type': property.property_type,
             'listing_status': property.listing_status,
-            'rooms': property.rooms
+           
         } for property in boosted_properties], 200
 
 boost_bp_api.add_resource(BoostProperty, '/property') 
