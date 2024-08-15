@@ -228,3 +228,67 @@ class Installments(Resource):
 
 
 userpayment_api.add_resource(Installments, '/installments/<int:property_id>')
+
+
+class AgentUserPayments(Resource):
+  @jwt_required()
+  def get(self, property_id):
+        agent_id = get_jwt_identity()
+
+        properties = Property.query.filter_by(agent_id=agent_id).all()
+        if not properties:
+            return {'message': 'No properties found for the agent'}, 404
+        # Retrieve the property from the database
+      
+        property_ids = [property_.id for property_ in properties]
+        payments = UserPayment.query.filter(UserPayment.property_id.in_(property_ids)).first()
+        # Retrieve all user payments for the specified property
+       
+
+        # Prepare the response data
+        payment_list = []
+        for payment in payments:
+            payment_list.append({
+                'id': payment.id,
+                'amount': payment.amount,
+                'property': payment.property_id,
+                'installment_amount': payment.installment_amount,
+                'total_installments':payment.total_installments,
+                'payment_status': payment.payment_status,
+                # 'payment_date': payment.payment_date.strftime('%Y-%m-%d'),
+                'user_id': payment.user_id,
+                'full_name': payment.users.full_name
+
+
+            })
+
+        return {
+            'payments': payment_list
+        }, 200
+class AgentUserPayments(Resource):
+    def get(self, property_id):
+        # Retrieve the property from the database
+        property_ = Property.query.filter_by(id=property_id).first()
+        if not property_:
+            return {'message': 'Property not found'}, 404
+
+        # Retrieve all user payments for the specified property
+        payments = UserPayment.query.filter_by(property_id=property_id).all()
+
+        # Prepare the response data
+        payment_list = []
+        for payment in payments:
+            payment_list.append({
+                'id': payment.id,
+                'amount': payment.amount,
+                'property': payment.property_id,
+                'installment_amount': payment.installment_amount,
+                'total_installments': payment.total_installments,
+                'payment_status': payment.payment_status,
+                'full_name':payment.users.full_name,
+                'user_id': payment.user_id,
+            })
+
+        return {'payments': payment_list}, 200
+
+userpayment_api.add_resource(AgentUserPayments, '/agent/<int:property_id>')
