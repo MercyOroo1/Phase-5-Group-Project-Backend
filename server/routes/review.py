@@ -33,10 +33,21 @@ class ReviewResource(Resource):
     
     
     def get(self):
-        reviews = Review.query.all()
-        if not reviews :
-            return {'message': 'No reviews yet'}
-        
-        return {[{'user_id': review.user_id, 'rating' : review.rating, 'comment': review.comment} for review in reviews]},200
-        
+     reviews = Review.query.all()
+     if not reviews:
+        return {'message': 'No reviews yet'}, 200
+
+     review_list = [
+        {   "id": review.id,
+            'user': review.user.full_name,
+            'rating': review.rating,
+            'comment': review.comment,
+            'image': review.user.profile.photo_url  # Ensure profile is the correct relationship
+        }
+        for review in reviews
+    ]
+     
+
+     return {'reviews': review_list}, 200
+
 review_api.add_resource(ReviewResource, '/gotten')
