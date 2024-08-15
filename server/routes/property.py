@@ -172,6 +172,17 @@ class GetPropertyForSale(Resource):
 property_api.add_resource(GetPropertyForSale, '/for-sale')
 
 
+
+class GetRentals(Resource):
+
+    def get(self):
+        properties = Property.query.filter_by(listing_status='rental').all()
+        return [{'id': property.id, 'address': property.address, 'city': property.city, 'square_footage': property.square_footage, 'price': property.price, 'property_type': property.property_type, 'listing_status': property.listing_status} for property in properties]
+    
+
+property_api.add_resource(GetRentals,'/rentals')
+
+
 class GetAgentPropeties(Resource):
    
     @jwt_required()  
