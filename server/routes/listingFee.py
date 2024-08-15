@@ -43,6 +43,7 @@ class ListingFeeResource(Resource):
             subscription_status=args['subscription_status']
         )
         
+        
         db.session.add(fee)
         db.session.commit()
         return {'message': 'Listing fee added successfully', 'id': fee.id}, 201
