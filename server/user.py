@@ -1,7 +1,7 @@
 from flask_restful import Api, Resource, reqparse
 from flask import Blueprint
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import User, db, AgentApplication, Agent
+from server.models import User, db, AgentApplication, Agent
 from sqlalchemy.exc import SQLAlchemyError
 
 user_bp = Blueprint('user_bp', __name__, url_prefix='/user')
