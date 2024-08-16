@@ -9,7 +9,7 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 
 # Import blueprints
-from auth import auth_bp, bcrypt, create_resources
+from server.auth import auth_bp, bcrypt, create_resources
 from contactmessage import contact_bp
 from features import features_bp
 from profile import profile_bp
