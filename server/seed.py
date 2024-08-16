@@ -1,6 +1,6 @@
 from werkzeug.security import generate_password_hash
-from app import  app  # Import your Flask app and db
-from models import db, User, Role, Agent, Property, ListingFee, AgentApplication, Profile, SavedProperty, ContactMessage, Review, Feature, Payment, PurchaseRequest, UserPayment
+from server.app import  app  # Import your Flask app and db
+from server.models import db, User, Role, Agent, Property, ListingFee, AgentApplication, Profile, SavedProperty, ContactMessage, Review, Feature, Payment, PurchaseRequest, UserPayment
 import datetime
 
 def seed_roles():
