@@ -9,25 +9,25 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 
 # Import blueprints
-from auth import auth_bp, bcrypt, create_resources
-from contactmessage import contact_bp
-from features import features_bp
-from profile import profile_bp
-from photo import photo_bp
-from admin import admin_bp, create_resources2
+from server.auth import auth_bp, bcrypt, create_resources
+from server.contactmessage import contact_bp
+from server.features import features_bp
+from server.profile import profile_bp
+from server.photo import photo_bp
+from server.admin import admin_bp, create_resources2
 
-from property import property_bp
-from agent import agent_bp
-from user import user_bp
-from savedproperties import saved_bp
-from review import review_bp
-from boostproperty import boost_bp
-from payments import payments_bp
-from purchaserequest import purchase_request_bp, create_resources3
-from userpayments import userpayment_bp
-from listingFee import listingfee_bp,create_resources4
+from server.property import property_bp
+from server.agent import agent_bp
+from server.user import user_bp
+from server.savedproperties import saved_bp
+from server.review import review_bp
+from server.boostproperty import boost_bp
+from server.payments import payments_bp
+from server.purchaserequest import purchase_request_bp, create_resources3
+from server.userpayments import userpayment_bp
+from server.listingFee import listingfee_bp,create_resources4
 import os
-from models import db, User
+from server.models import db, User
 from dotenv import load_dotenv
 
 # Load environment variables
