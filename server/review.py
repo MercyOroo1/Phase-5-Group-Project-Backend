@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask_restful import Api, Resource, reqparse
-from models import Review, db
+from server.models import Review, db
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_cors import CORS
 
