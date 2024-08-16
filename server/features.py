@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask_restful import Api, Resource, reqparse
-from models import db ,Feature
+from server.models import db ,Feature
 
 
 

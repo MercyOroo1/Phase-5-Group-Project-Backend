@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_restful import Api, Resource, reqparse
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import db, Profile, User
+from  server.models import db, Profile, User
 
 profile_bp = Blueprint('profile', __name__, url_prefix='/profile')
 profile_api = Api(profile_bp)

@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from flask_restful import Api, Resource, reqparse
-from models import db, ContactMessage
+from server.models import db, ContactMessage
 from flask_jwt_extended import jwt_required, get_jwt_identity
 contact_bp = Blueprint('contact', __name__, url_prefix='/contact')
 contact_api = Api(contact_bp)

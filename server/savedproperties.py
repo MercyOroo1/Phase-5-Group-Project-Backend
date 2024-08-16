@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask_restful import Api, Resource, reqparse
-from models import SavedProperty, db, Property
+from server.models import SavedProperty, db, Property
 from flask_cors import CORS
 from flask_jwt_extended import jwt_required, get_jwt_identity
 

@@ -1,5 +1,5 @@
 from flask_restful import Api, Resource, reqparse
-from models import db, PurchaseRequest
+from server.models import db, PurchaseRequest
 from flask import Blueprint
 from flask_cors import CORS
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -49,7 +49,7 @@ from flask import request
 from flask_mail import Message
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
-from models import PurchaseRequest, db
+from server.models import PurchaseRequest, db
 
 class ApprovePurchaseRequestResource(Resource):
     def __init__(self, mail):
