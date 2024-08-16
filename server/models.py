@@ -161,7 +161,7 @@ class Property(db.Model):
 
     photos = db.relationship('Photo', back_populates='property', cascade='all, delete-orphan')
     agent = db.relationship('Agent', back_populates='properties')
-    saved_by = db.relationship('SavedProperty', back_populates='property')
+    saved_property = db.relationship('SavedProperty', back_populates='property', cascade = 'all, delete-orphan')
     contact_messages = db.relationship('ContactMessage', back_populates='property', cascade = 'all, delete-orphan')
     
 
@@ -201,7 +201,7 @@ class SavedProperty(db.Model):
     property_id = db.Column(db.Integer, db.ForeignKey('properties.id', name='fk_savedproperty_property'), nullable=False)
 
     user = db.relationship('User', back_populates='saved_properties')
-    property = db.relationship('Property', back_populates='saved_by')
+    property = db.relationship('Property', back_populates='saved_property' )
 
 class ContactMessage(db.Model):
     __tablename__ = 'contact_messages'
