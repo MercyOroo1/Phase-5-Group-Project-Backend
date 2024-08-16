@@ -1,5 +1,5 @@
 from flask_restful import Api, Resource, reqparse
-from models import db, PurchaseRequest
+from server.models import db, PurchaseRequest
 from flask import Blueprint
 from flask_cors import CORS
 from flask_jwt_extended import jwt_required, get_jwt_identity
