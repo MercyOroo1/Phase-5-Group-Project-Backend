@@ -1,7 +1,7 @@
 import uuid
 from flask import Blueprint, request, jsonify
 from flask_restful import Api, Resource, reqparse
-from models import db, Payment, Property
+from server.models import db, Payment, Property
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 payments_bp = Blueprint('payments', __name__, url_prefix='/payments')
