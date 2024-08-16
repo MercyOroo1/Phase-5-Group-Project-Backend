@@ -20,7 +20,7 @@ from server.property import property_bp
 from server.agent import agent_bp
 from server.user import user_bp
 from server.savedproperties import saved_bp
-from sever.review import review_bp
+from server.review import review_bp
 from server.boostproperty import boost_bp
 from server.payments import payments_bp
 from server.purchaserequest import purchase_request_bp, create_resources3
