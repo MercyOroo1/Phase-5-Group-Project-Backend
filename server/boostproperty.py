@@ -1,6 +1,6 @@
 from flask_restful import Resource, Api
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import Property, db
+from server.models import Property, db
 from flask import Blueprint
 
 boost_bp = Blueprint("boost", __name__, url_prefix="/boost")
