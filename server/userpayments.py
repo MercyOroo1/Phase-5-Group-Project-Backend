@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 from flask_restful import Api, Resource, reqparse
 from flask_cors import CORS
-from models import UserPayment, Property, db
+from server.models import UserPayment, Property, db
 import stripe
 import os
 from flask_jwt_extended import jwt_required, get_jwt_identity
