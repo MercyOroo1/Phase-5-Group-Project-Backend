@@ -1,7 +1,7 @@
 from flask_restful import Resource,Api,reqparse
 from flask import Flask,Blueprint
 from flask_cors import CORS
-from models import db ,Agent, AgentApplication,User
+from server.models import db ,Agent, AgentApplication,User
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
