@@ -28,6 +28,7 @@ from userpayments import userpayment_bp
 from listingFee import listingfee_bp,create_resources4
 import os
 from models import db, User
+from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
@@ -37,8 +38,13 @@ app = Flask(__name__)
 CORS(app)
 
 # App configurations
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///property.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///property.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.json.compact = False
+
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['SECRET_KEY'] = "We are winners"
 app.config['JWT_SECRET_KEY'] = 'We are winners' 
 jwt = JWTManager(app)
