@@ -9,23 +9,23 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 
 # Import blueprints
-from routes.auth import auth_bp, bcrypt, create_resources
-from routes.contactmessage import contact_bp
-from routes.features import features_bp
-from routes.profile import profile_bp
-from routes.photo import photo_bp
-from routes.admin import admin_bp, create_resources2
+from auth import auth_bp, bcrypt, create_resources
+from contactmessage import contact_bp
+from features import features_bp
+from profile import profile_bp
+from photo import photo_bp
+from admin import admin_bp, create_resources2
 
-from routes.property import property_bp
-from routes.agent import agent_bp
-from routes.user import user_bp
-from routes.savedproperties import saved_bp
-from routes.review import review_bp
-from routes.boostproperty import boost_bp
-from routes.payments import payments_bp
-from routes.purchaserequest import purchase_request_bp, create_resources3
-from routes.userpayments import userpayment_bp
-from routes.listingFee import listingfee_bp,create_resources4
+from property import property_bp
+from agent import agent_bp
+from user import user_bp
+from savedproperties import saved_bp
+from review import review_bp
+from boostproperty import boost_bp
+from payments import payments_bp
+from purchaserequest import purchase_request_bp, create_resources3
+from userpayments import userpayment_bp
+from listingFee import listingfee_bp,create_resources4
 import os
 from models import db, User
 

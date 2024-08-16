@@ -1,7 +1,7 @@
 from flask_restful import Api, Resource, reqparse
 from models import User, db, AgentApplication, Agent,Payment
 from flask import Blueprint
-from routes.auth import allow
+from auth import allow
 from flask_jwt_extended import jwt_required
 from flask_mail import Message
 
