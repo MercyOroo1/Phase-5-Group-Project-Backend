@@ -27,7 +27,7 @@ from purchaserequest import purchase_request_bp, create_resources3
 from userpayments import userpayment_bp
 from listingFee import listingfee_bp,create_resources4
 import os
-from models import db, User
+from server.models import db, User
 
 # Load environment variables
 load_dotenv()
