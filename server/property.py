@@ -1,9 +1,9 @@
 from flask_restful import Api, Resource, reqparse
-from models import Property, db, Photo
+from server.models import Property, db, Photo
 from flask import Blueprint
 from flask_cors import CORS
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from boostproperty import BoostProperty, GetBoostedProperties  
+from server.boostproperty import BoostProperty, GetBoostedProperties  
 
 
 property_bp = Blueprint('property_bp', __name__, url_prefix='/property')
