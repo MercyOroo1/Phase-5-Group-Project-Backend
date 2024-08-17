@@ -47,7 +47,7 @@ class ResetPasswordRequest(Resource):
         if user and user.active:
             token = serializer.dumps(email, salt='reset-password')
             user.reset_token = token
-            reset_url = f"http://localhost:5173/reset-password?token={token}"
+            reset_url = f"https://phase-5-group-project-backend-24.onrender.com/reset-password?token={token}"
             msg = Message("Password Reset Request",
                           sender="mercy.oroo.ke@gmail.com",
                           recipients=[email])
@@ -100,7 +100,7 @@ class Register(Resource):
         
         # Generate confirmation token
         token = serializer.dumps(data.get('email'), salt='email-confirm')
-        confirm_url = f"http://localhost:5173/confirm-email?token={token}"
+        confirm_url = f"https://phase-5-group-project-backend-24.onrender.com/confirm-email?token={token}"
         msg = Message("Email Confirmation", sender="mercy.oroo.ke@gmail.com", recipients=[data.get('email')])
         msg.body = f"Please confirm your email by clicking on the following link: {confirm_url}"
         self.mail.send(msg)
