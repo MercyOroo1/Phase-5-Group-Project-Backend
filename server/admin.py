@@ -92,7 +92,7 @@ class AgentApplicationAdminResource(Resource):
             body = ""
             if data['status'] == 'approved':
                 subject = "Agent Application Approved"
-                payment_url = f"http://localhost:5173/agent-payment?userId={application.user_id}&applicationId={application.id}"  # Replace with your actual payment URL
+                payment_url = f"https://phase-5-group-project-backend-24.onrender.com/agent-payment?userId={application.user_id}&applicationId={application.id}"  # Replace with your actual payment URL
                 body = (f"Dear {application.full_name},\n\n"
                         "We are pleased to inform you that your application to become an agent has been approved. "
                         "To complete your registration, please pay the subscription fee by clicking the link below:\n\n"
