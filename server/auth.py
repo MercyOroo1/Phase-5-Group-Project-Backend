@@ -11,7 +11,7 @@ from werkzeug.security import generate_password_hash
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from flask_mail import Message
 from flask_cors import CORS
-
+import os
 serializer = URLSafeTimedSerializer('We are winners')
 
 auth_bp = Blueprint('auth_bp', __name__, url_prefix='/auth')
