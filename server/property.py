@@ -118,7 +118,7 @@ class PropertyListResource(Resource):
 
         
 
-        agent_id=current_user_id
+        agent_id=3
     )
      db.session.add(property)
      db.session.commit()
