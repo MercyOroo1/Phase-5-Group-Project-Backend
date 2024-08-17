@@ -41,8 +41,8 @@ class ReviewResource(Resource):
         {   "id": review.id,
             'user': review.user.full_name,
             'rating': review.rating,
-            'comment': review.comment,
-            'image': review.user.profile.photo_url  # Ensure profile is the correct relationship
+            'comment': review.comment
+            # 'image': review.user.profile.photo_url  # Ensure profile is the correct relationship
         }
         for review in reviews
     ]
