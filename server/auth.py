@@ -21,6 +21,10 @@ jwt = JWTManager()
 
 CORS(auth_bp)
 
+base_url = os.environ.get('BASE_URL')
+
+reset_password_route = os.environ.get('RESET_PASSWORD_ROUTE')
+
 @jwt.user_lookup_loader
 def user_lookup_callback(_jwt_header, jwt_data):
     identity = jwt_data["sub"]
@@ -47,7 +51,7 @@ class ResetPasswordRequest(Resource):
         if user and user.active:
             token = serializer.dumps(email, salt='reset-password')
             user.reset_token = token
-            reset_url = f"https://propertygalaxy201.netlify.app/reset-password?token={token}"
+            reset_url = f"{base_url}{reset_password_route}?token={token}"
             msg = Message("Password Reset Request",
                           sender="mercy.oroo.ke@gmail.com",
                           recipients=[email])
