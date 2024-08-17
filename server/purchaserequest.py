@@ -68,7 +68,7 @@ class ApprovePurchaseRequestResource(Resource):
         # Generate the payment link with query parameters
         if purchase_request.status == 'Pending':
             purchase_request.status = 'Approved'
-            payment_url = (f"https://phase-5-group-project-backend-24.onrender.com/payment?propertyId={purchase_request.property_id}"
+            payment_url = (f"https://propertygalaxy201.netlify.app/payment?propertyId={purchase_request.property_id}"
                            f"&userId={purchase_request.user_id}")
             subject = "Property Purchase Approved"
             body = (f"Dear User,\n\n"
