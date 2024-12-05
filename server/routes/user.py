@@ -49,6 +49,7 @@ class AgentApplicationResource(Resource):
         parser.add_argument('phone_number', required=True, help="Phone number is required.")
         parser.add_argument('languages', required=True, help="Languages are required.")
         parser.add_argument('agency_name', required=True, help="Agency name is required.")
+        parser.add_argument('photo_url', required = True, help ="Photo url is required.")
         parser.add_argument('photo_url', required=True, help="Photo url is required.")
         data = parser.parse_args()
         
@@ -61,6 +62,7 @@ class AgentApplicationResource(Resource):
             phone_number=data['phone_number'],
             languages=data['languages'],
             agency_name=data['agency_name'],
+            photo_url=data['photo_url'],
             photo_url= data['photo_url']
         )
         db.session.add(new_application)

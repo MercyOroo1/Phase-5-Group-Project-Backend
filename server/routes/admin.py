@@ -84,6 +84,29 @@ class AgentApplicationAdminResource(Resource):
             return {'message': 'Invalid status.'}, 400
 
         application.status = data['status']
+        new_agent_id = None
+
+        # If approved, create an agent record
+        if data['status'] == 'approved':
+            new_agent = Agent(
+                user_id=application.user_id,
+                license_number=application.license_number,
+                full_name=application.full_name,
+                email=application.email,
+                experience=application.experience,
+                phone_number=application.phone_number,
+                languages=application.languages,
+                agency_name=application.agency_name,
+                for_sale=0,  # Initial value
+                sold=0,      # Initial value
+                listed_properties=0  # Initial value
+            )
+            new_role = User.query.get(application.user_id)
+            new_role.role_id = 2
+            db.session.add(new_agent)
+            db.session.add(new_role)
+            db.session.flush()  
+            new_agent_id = new_agent.id
 
         try:
             db.session.commit()
